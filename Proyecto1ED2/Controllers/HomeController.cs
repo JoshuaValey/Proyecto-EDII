@@ -26,5 +26,10 @@ namespace Proyecto1ED2.Controllers
 
             return View();
         }
+
+        public ActionResult CrearUsuario()
+        {
+            return View();
+        }
     }
 }
