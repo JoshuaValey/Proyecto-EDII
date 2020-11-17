@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Proyecto1ED2", "Proyecto1ED
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BibliotecaMensajeria", "..\BibliotecaMensajeria\BibliotecaMensajeria.csproj", "{70EFBEFB-5369-45FD-9B12-CB45BFAB2A7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIApp", "..\APIApp\APIApp.csproj", "{89FDEAFF-B1DD-4E7D-B95D-C2020CDFE81A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{70EFBEFB-5369-45FD-9B12-CB45BFAB2A7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70EFBEFB-5369-45FD-9B12-CB45BFAB2A7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70EFBEFB-5369-45FD-9B12-CB45BFAB2A7C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89FDEAFF-B1DD-4E7D-B95D-C2020CDFE81A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89FDEAFF-B1DD-4E7D-B95D-C2020CDFE81A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89FDEAFF-B1DD-4E7D-B95D-C2020CDFE81A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89FDEAFF-B1DD-4E7D-B95D-C2020CDFE81A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

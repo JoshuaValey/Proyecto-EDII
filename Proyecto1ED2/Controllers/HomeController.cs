@@ -8,6 +8,7 @@ namespace Proyecto1ED2.Controllers
 {
     public class HomeController : Controller
     {
+        //GET: Vistas 
         public ActionResult Index()
         {
             return View();
