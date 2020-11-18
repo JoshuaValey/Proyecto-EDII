@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BibliotecaMensajeria.Cifrados
 {
-    internal class Cesar
+    public class Cesar
     {
         private string UpperAbc;
         private string LowerAbc;
