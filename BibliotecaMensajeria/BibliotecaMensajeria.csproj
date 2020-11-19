@@ -41,7 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+<<<<<<< HEAD
     <Compile Include="Cifrado\SDES.cs" />
+=======
+    <Compile Include="Cifrados\Cesar.cs" />
+>>>>>>> f140f0a71fec89d8e962beea2a21bc49d150a642
     <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
