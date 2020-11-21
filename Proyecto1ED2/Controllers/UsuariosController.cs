@@ -29,7 +29,7 @@ namespace Proyecto1ED2.Controllers
         {
             try
             {
-                var user = new usuario();
+                var user = new Usuario();
                 user.User = collection["User"];
                 user.Password = collection["Password"];
                 //https://localhost:44343/
