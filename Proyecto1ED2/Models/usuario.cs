@@ -29,5 +29,12 @@ namespace Proyecto1ED2.Models
 
         [BsonElement("contactos")]
         public List<string> Contactos = new List<string>();
+
+        [BsonElement("guid")]
+        public string _Guid { get; set; }
+
+        public Usuario(){
+            this._Guid = System.Guid.NewGuid().ToString();
+        }
     }
 }
