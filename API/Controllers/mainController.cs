@@ -25,12 +25,13 @@ namespace API.Controllers
         [Route("Login/{user}/{password}")]
         public IActionResult Login(string user, string password)
         {
+            Cesar cifrado = new Cesar("Centrifugados");
             DbConnection connection = new DbConnection();
             var db = connection.Client.GetDatabase(connection.DBName);
             var usersCollection = db.GetCollection<Usuario>("users");
             var filter = Builders<Usuario>.Filter.Eq("user", user);
             List<Usuario> usuariosLog = usersCollection.Find<Usuario>(filter).ToList();
-            Usuario userLog = UserLog(usuariosLog, user, password);
+            Usuario userLog = UserLog(usuariosLog, user, cifrado.Cifrar(password));
             if (userLog != null)
             {
                 return StatusCode(200);

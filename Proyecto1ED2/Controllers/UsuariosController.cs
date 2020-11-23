@@ -28,7 +28,7 @@ namespace Proyecto1ED2.Controllers
         HttpClient ClienteHttp = new HttpClient();
 
         #region Action Results botones 
-        public ActionResult Logearse(FormCollection collection)
+        public ActionResult Logearse(FormCollection collection, string username)
         {
             var user = new Usuario();
             user.User = collection["User"];
@@ -36,7 +36,7 @@ namespace Proyecto1ED2.Controllers
 
             var json = JsonConvert.SerializeObject(user);
             var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
-            var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Login" + "/" + "marce" + "/" + "hola", jsonContent).Result;
+            var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Login" + "/" + "mashe" + "/" + "hola", jsonContent).Result;
             if (response.ReasonPhrase == "OK")
             {
                 return View("Index");
