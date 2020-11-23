@@ -4,9 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Connection;
 using API.Modelos;
+using API.Models;
 using Biblioteca.Estructuras;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 using Newtonsoft.Json;
+using API.Connection;
+using API.Models;
+using MongoDB.Driver;
+using MongoDB.Bson;
+
 
 namespace API.Controllers
 {
@@ -18,7 +25,13 @@ namespace API.Controllers
         [Route("Login/{user}/{password}")]
         public IActionResult Login(string user, string password)
         {
-            if (user == "marce")
+            DbConnection connection = new DbConnection();
+            var db = connection.Client.GetDatabase(connection.DBName);
+            var usersCollection = db.GetCollection<Usuario>("users");
+            var filter = Builders<Usuario>.Filter.Eq("user", user);
+            List<Usuario> usuariosLog = usersCollection.Find<Usuario>(filter).ToList();
+            Usuario userLog = UserLog(usuariosLog, user, password);
+            if (userLog != null)
             {
                 return StatusCode(200);
             }
@@ -26,8 +39,6 @@ namespace API.Controllers
             {
                 return StatusCode(500);
             }
-            //hacer comprobacion de usuario y contrase;a 
-            //devolver si se comprobo o no 
         }
 
         [HttpPost]
@@ -54,6 +65,25 @@ namespace API.Controllers
             {
                 return StatusCode(500);
             }
+
         }
-    }
+
+        static Usuario UserLog(List<Usuario> usuariosLog, string user, string pass)
+        {
+            Usuario retorno = null;
+            int i; bool exist = false;
+            for (i = 0; i < usuariosLog.Count; i++)
+            {
+                if (usuariosLog[i].Password == pass && usuariosLog[i].User == user)
+                {
+                    exist = true;
+                    break;
+                }
+            }
+            if (exist)
+            {
+                retorno = usuariosLog[i];
+            }
+            return retorno;
+        }    }
 }
