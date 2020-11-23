@@ -12,38 +12,20 @@ namespace API.Controllers
     [ApiController]
     public class mainController : ControllerBase
     {
-        // GET: api/<mainController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/<mainController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/<mainController>
         [HttpPost]
-        [Route ("Login")]
-        public void Login([FromBody] string value)
-        {//https://localhost:44343/weatherforecast
-            var lol = 0;
-        }
-
-        // PUT api/<mainController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [Route("Login/{user}/{password}")]
+        public IActionResult Login(string user, string password)
         {
-        }
-
-        // DELETE api/<mainController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            if (user == "marce")
+            {
+                return StatusCode(200);
+            }
+            else
+            {
+                return StatusCode(500);
+            }
+            //hacer comprobacion de usuario y contrase;a 
+            //devolver si se comprobo o no 
         }
     }
 }

@@ -7,48 +7,45 @@ using System.Net.Http;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
+using System.Net.Http.Formatting;
 
 namespace Proyecto1ED2.Controllers
 {
     public class UsuariosController : Controller
     {
-        // GET: Usuarios
-        HttpClient ClienteHttp = new HttpClient();
-        public ActionResult Index()
-        {
-            return View();
-        }
-
+        #region Cargar views
         public ActionResult CrearUsuario()
         {
             return View();
         }
 
-        [HttpPost]
-        public async System.Threading.Tasks.Task<ActionResult> IndexAsync(FormCollection collection)
+        public ActionResult Index(FormCollection collection)
         {
-            try
-            {
-                var user = new Usuario();
-                user.User = collection["User"];
-                user.Password = collection["Password"];
-                //https://localhost:44343/
-                var json = JsonConvert.SerializeObject(user);
-                //var enviar = Nuevo.User + "/" + Nuevo.Password;
-                //Generar Token
-                //UsuarioActual= 
-                //Verificar Que los campos sean correctos
-                var cliente = new HttpClient();
+            return View();
+        }
 
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-                var uri = "https://localhost:44343/main/Login";
-                var respose = await cliente.PostAsync(uri, content);
-                return RedirectToAction("Index");
-            }
-            catch
+        #endregion
+        HttpClient ClienteHttp = new HttpClient();
+
+        #region Action Results botones 
+        public ActionResult Logearse(FormCollection collection)
+        {
+            var user = new Usuario();
+            user.User = collection["User"];
+            user.Password = collection["Password"];
+
+            var json = JsonConvert.SerializeObject(user);
+            var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
+            var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Login" + "/" + "marce" + "/" + "hola", jsonContent).Result;
+            if (response.ReasonPhrase == "OK")
             {
-                return View();
+                return View("Index");
+            }
+            else
+            {
+                return View("Index");
             }
         }
+        #endregion
     }
 }

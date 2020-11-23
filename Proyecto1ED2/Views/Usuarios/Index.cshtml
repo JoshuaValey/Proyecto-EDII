@@ -1,10 +1,10 @@
-﻿@model Proyecto1ED2.Models.usuario
+﻿@model Proyecto1ED2.Models.Usuario
 
 @{
     ViewBag.Title = "Index";
 }
 
-<h2>Bienvenido A MasheGames</h2>
+<h2>Bienvenido</h2>
 
 @using (Html.BeginForm()) 
 {
@@ -33,7 +33,7 @@
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                @Html.ActionLink("Iniciar sesion", "Logearse", null, new { @class = "btn btn-default" })
             </div>
         </div>
     </div>
