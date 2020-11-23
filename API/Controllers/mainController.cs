@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Modelos;
 using Microsoft.AspNetCore.Mvc;
 using API.Connection;
 using API.Models;
@@ -40,6 +41,7 @@ namespace API.Controllers
             //devolver si se comprobo o no 
         }
 
+
         static Usuario UserLog(List<Usuario> usuariosLog, string user, string pass)
         {
             Usuario retorno = null;
@@ -57,6 +59,19 @@ namespace API.Controllers
                 retorno = usuariosLog[i];
             }
             return retorno;
+        }
+        public IActionResult NuevoUsuario(users usuario)
+        {
+            try
+            {
+
+                return StatusCode(200);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+
         }
     }
 }
