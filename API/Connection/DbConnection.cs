@@ -13,7 +13,7 @@ namespace API.Connection
         public string DBName { get; set; }
         public string DBUrl { get; set; }
 
-        public DbConnection(string dbName, string dbUrl)
+        public DbConnection(string dbName = "PruebasURL", string dbUrl = "mongodb://Joshua:1014416@pruebasurl-shard-00-00.gwequ.mongodb.net:27017,pruebasurl-shard-00-01.gwequ.mongodb.net:27017,pruebasurl-shard-00-02.gwequ.mongodb.net:27017/PruebasURL?ssl=true&replicaSet=atlas-ku8d37-shard-0&authSource=admin&retryWrites=true&w=majority")
         {
 
             this.DBName = dbName;
