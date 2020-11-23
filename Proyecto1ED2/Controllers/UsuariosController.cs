@@ -46,6 +46,36 @@ namespace Proyecto1ED2.Controllers
                 return View("Index");
             }
         }
+
+        public ActionResult Crear(FormCollection collection)
+        {
+            try
+            {
+                var newUser = new Usuario();
+                newUser.Nombre = collection["Nombre"];
+                newUser.Apellido = collection["Apellido"];
+                newUser.Password = collection["Password"];
+                newUser.User = collection["User"];
+                newUser.EMail = collection["EMail"];
+                newUser.LlaveSDES = collection["LlaveSDES"];
+
+                var json = JsonConvert.SerializeObject(newUser);
+                var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Nuevo" + "/" + "marce" + "/" + "estrada" + "/" + "hola" + "/" + "mashe" + "/" + "mail" + "/" + "152685", jsonContent).Result;
+                if (response.ReasonPhrase == "OK")
+                {
+                    return View("Index");
+                }
+                else
+                {
+                    return View("CrearUsuario");
+                }
+            }
+            catch
+            {
+                return View("CrearUsuario");
+            }
+        }
         #endregion
     }
 }

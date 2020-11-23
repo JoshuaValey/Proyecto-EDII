@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Connection;
 using API.Modelos;
+using Biblioteca.Estructuras;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Newtonsoft.Json;
 
 namespace API.Controllers
 {
@@ -29,11 +30,24 @@ namespace API.Controllers
             //devolver si se comprobo o no 
         }
 
-        public IActionResult NuevoUsuario(users usuario)
+        [HttpPost]
+        [Route("Nuevo/{nombre}/{apellido}/{password}/{user}/{email}/{llave}")]
+        public IActionResult NuevoUsuario(string nombre, string apellido, string password, string user, string email, string llave)
         {
+            Cesar cifrado = new Cesar("Centrifugados");
+            DbConnection mongo = new DbConnection();
             try
             {
+                users newUser = new users();
+                newUser.Nombre = nombre;
+                newUser.Apellido = apellido;
+                newUser.Password = cifrado.Cifrar(password);
+                newUser.User = user;
+                newUser.EMail = email;
+                newUser.LlaveSDES = llave;
 
+                var json = JsonConvert.SerializeObject(newUser);
+                mongo.InsertDb<users>("users", newUser);
                 return StatusCode(200);
             }
             catch

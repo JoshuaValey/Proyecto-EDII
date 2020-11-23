@@ -1,4 +1,4 @@
-﻿@model Proyecto1ED2.Models.usuario
+﻿@model Proyecto1ED2.Models.Usuario
 
 @{
     ViewBag.Title = "CrearUsuario";
@@ -47,10 +47,10 @@
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.eMail, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.EMail, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.eMail, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.eMail, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.EMail, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.EMail, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -64,12 +64,9 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                @Html.ActionLink("Crear usuario", "Crear", null, new { @class = "btn btn-default" })
             </div>
         </div>
     </div>
 }
 
-<div>
-    @Html.ActionLink("Back to List", "Index")
-</div>
