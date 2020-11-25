@@ -42,19 +42,18 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("Nuevo/{nombre}/{apellido}/{password}/{user}/{email}")]
-        public IActionResult NuevoUsuario(string nombre, string apellido, string password, string user, string email, string llave)
+        public IActionResult NuevoUsuario(string nombre, string apellido, string password, string user, string email)
         {
             Cesar cifrado = new Cesar("Centrifugados");
             DbConnection mongo = new DbConnection();
             try
             {
-                users newUser = new users();
+                Usuario newUser = new Usuario();
                 newUser.Nombre = nombre;
                 newUser.Apellido = apellido;
                 newUser.Password = cifrado.Cifrar(password);
                 newUser.User = user;
                 newUser.EMail = email;
-                newUser.LlaveSDES = llave;
 
 
                 DbConnection connection = new DbConnection();
@@ -71,7 +70,7 @@ namespace API.Controllers
                 else //No se encontro el usuario, crear uno nuevo. 
                 {
                     var json = JsonConvert.SerializeObject(newUser);
-                    mongo.InsertDb<users>("users", newUser);
+                    mongo.InsertDb<Usuario>("users", newUser);
                     return StatusCode(200);
                 }
 
@@ -83,6 +82,15 @@ namespace API.Controllers
                 return StatusCode(500);
             }
 
+        }
+
+        [HttpPost]
+        [Route("Buscar/{palabraclave}")]
+        public List<string> buscarMensajes(string palabraclave)
+        {
+            List<string> mensajesEncontrados = new List<string>();
+
+            return mensajesEncontrados;
         }
 
         static Usuario UserLog(List<Usuario> usuariosLog, string user, string pass)
