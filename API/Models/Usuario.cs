@@ -36,6 +36,19 @@ namespace API.Models
         public Usuario()
         {
             this._Guid = System.Guid.NewGuid().ToString();
+            GenerarLlaveyPrivado();
+        }
+
+        public void GenerarLlaveyPrivado()
+        {
+            Random rnd = new Random();
+            byte value = (byte)rnd.Next(0, 255);
+            string cadenaBinaria = Convert.ToString(value, 2).PadLeft(8, '0');
+            //Llave SDES de usuario
+            this.LlaveSDES = cadenaBinaria.Substring(3, 5);
+            //Número privado para DH
+            this.NumeroPrivado = value;
+
         }
     }
 }
