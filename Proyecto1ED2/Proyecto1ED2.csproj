@@ -175,6 +175,8 @@
     <Content Include="Views\Home\CrearUsuario.cshtml" />
     <Content Include="Views\Usuarios\Index.cshtml" />
     <Content Include="Views\Usuarios\CrearUsuario.cshtml" />
+    <Content Include="Views\Usuarios\Principal.cshtml" />
+    <Content Include="Views\Usuarios\Chat.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
