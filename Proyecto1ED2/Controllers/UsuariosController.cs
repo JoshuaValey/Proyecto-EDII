@@ -19,16 +19,28 @@ namespace Proyecto1ED2.Controllers
             return View();
         }
 
-        public ActionResult Index(FormCollection collection)
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult Principal()
+        {
+            return View();
+        }
+
+        public ActionResult Chat()
         {
             return View();
         }
 
         #endregion
+
         HttpClient ClienteHttp = new HttpClient();
 
         #region Action Results botones 
-        public ActionResult Logearse(FormCollection collection, string username)
+        [HttpPost]
+        public ActionResult Index(FormCollection collection)
         {
             var user = new Usuario();
             user.User = collection["User"];
@@ -36,7 +48,7 @@ namespace Proyecto1ED2.Controllers
 
             var json = JsonConvert.SerializeObject(user);
             var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
-            var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Login" + "/" + "mashe" + "/" + "hola", jsonContent).Result;
+            var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Login" + "/" + user.User + "/" + user.Password, jsonContent).Result;
             if (response.ReasonPhrase == "OK")
             {
                 return View("Index");
@@ -47,7 +59,8 @@ namespace Proyecto1ED2.Controllers
             }
         }
 
-        public ActionResult Crear(FormCollection collection)
+        [HttpPost]
+        public ActionResult CrearUsuario(FormCollection collection)
         {
             try
             {
@@ -57,11 +70,10 @@ namespace Proyecto1ED2.Controllers
                 newUser.Password = collection["Password"];
                 newUser.User = collection["User"];
                 newUser.EMail = collection["EMail"];
-                newUser.LlaveSDES = collection["LlaveSDES"];
 
                 var json = JsonConvert.SerializeObject(newUser);
                 var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
-                var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Nuevo" + "/" + "marce" + "/" + "estrada" + "/" + "hola" + "/" + "mashe" + "/" + "mail" + "/" + "152685", jsonContent).Result;
+                var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Nuevo" + "/" + newUser.Nombre + "/" + newUser.Apellido + "/" + newUser.Password + "/" + newUser.User + "/" + newUser.EMail, jsonContent).Result;
                 if (response.ReasonPhrase == "OK")
                 {
                     return View("Index");

@@ -43,7 +43,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Route("Nuevo/{nombre}/{apellido}/{password}/{user}/{email}/{llave}")]
+        [Route("Nuevo/{nombre}/{apellido}/{password}/{user}/{email}")]
         public IActionResult NuevoUsuario(string nombre, string apellido, string password, string user, string email, string llave)
         {
             Cesar cifrado = new Cesar("Centrifugados");

@@ -1,45 +1,72 @@
-﻿@model Proyecto1ED2.Models.Usuario
+﻿<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+@using Proyecto1ED2.Models
+@model Proyecto1ED2.Models.Usuario
 
-@{
-    ViewBag.Title = "Index";
+@{ 
+    Layout = null;
 }
 
-<h2>Bienvenido</h2>
+<!DOCTYPE html>
+<html>
 
-@using (Html.BeginForm()) 
+<head>
+    <title>Iniciar sesion</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" integrity="sha384-gfdkjb5BdAXd+lj+gudLWI+BXq4IuLW5IT+brZEZsLFm++aCMlF1V92rMkPaX4PP" crossorigin="anonymous">
+</head>
+<body>
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
-<div class="form-horizontal">
-    <h4>usuario</h4>
-    <hr />
+    <br />
+    <br />
+    <br />
+    <br />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="container h-100">
+        <div class="d-flex justify-content-center h-100">
+            <div class="user_card">
+                <div class="d-flex justify-content-center">
+                    <div class="brand_logo_container">
+                        <img src="https://www.pinayu.com/blog/images/comprar-logotipo-comunicacion-mensajeria.jpg" class="brand_logo" alt="Logo" width="200" height="150">
+                    </div>
+                </div>
+                <br />
+                <div class="form-horizontal">
+                    <form>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.User, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.User, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.User, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
+                            <div class="col-md-10">
+                                @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <br />
+                        <div class="form-group">
+                            <input type="submit" value="Iniciar sesión" class="btn btn-info" />
+                        </div>
+                    </form>
+                </div>
 
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.User, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.User, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.User, "", new { @class = "text-danger" })
+                <div class="mt-2">
+                    <div class="d-flex justify-content-center links">
+                        ¿No tienes una cuenta? <a href='@(Url.Action("CrearUsuario", "Usuarios"))' class="ml-2">Regístrate</a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-md-2" })
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control" } })
-            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            @Html.ActionLink("Iniciar sesion", "Logearse", null , new { @class = "btn btn-default" })
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            @Html.ActionLink("Crear usuario", "CrearUsuario", null, new { @class = "btn btn-default" })
-        </div>
-    </div>
-</div>
+}
+</body>
+</html>
 }
