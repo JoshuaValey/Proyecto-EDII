@@ -9,9 +9,6 @@ using Biblioteca.Estructuras;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Newtonsoft.Json;
-using API.Connection;
-using API.Models;
-using MongoDB.Driver;
 using MongoDB.Bson;
 
 
@@ -26,6 +23,7 @@ namespace API.Controllers
         public IActionResult Login(string user, string password)
         {
             Cesar cifrado = new Cesar("Centrifugados");
+
             DbConnection connection = new DbConnection();
             var db = connection.Client.GetDatabase(connection.DBName);
             var usersCollection = db.GetCollection<Usuario>("users");
@@ -58,9 +56,27 @@ namespace API.Controllers
                 newUser.EMail = email;
                 newUser.LlaveSDES = llave;
 
-                var json = JsonConvert.SerializeObject(newUser);
-                mongo.InsertDb<users>("users", newUser);
-                return StatusCode(200);
+
+                DbConnection connection = new DbConnection();
+                var db = connection.Client.GetDatabase(connection.DBName);
+                var usersCollection = db.GetCollection<Usuario>("users");
+                var filter = Builders<Usuario>.Filter.Eq("user", newUser.User);
+                List<Usuario> usuarios = usersCollection.Find<Usuario>(filter).ToList();
+                Usuario userCreate = UserCreate(usuarios, newUser.User);
+
+                if (userCreate != null)//Se encontró usuario existente
+                {
+                    return StatusCode(500);
+                }
+                else //No se encontro el usuario, crear uno nuevo. 
+                {
+                    var json = JsonConvert.SerializeObject(newUser);
+                    mongo.InsertDb<users>("users", newUser);
+                    return StatusCode(200);
+                }
+
+
+                
             }
             catch
             {
@@ -86,5 +102,25 @@ namespace API.Controllers
                 retorno = usuariosLog[i];
             }
             return retorno;
-        }    }
+        }
+
+        static Usuario UserCreate(List<Usuario> usuarios, string user)
+        {
+            Usuario retorno = null;
+            int i; bool exist = false;
+            for (i = 0; i < usuarios.Count; i++)
+            {
+                if (usuarios[i].User == user)
+                {
+                    exist = true;
+                    break;
+                }
+            }
+            if (exist)
+            {
+                retorno = usuarios[i];
+            }
+            return retorno;
+        }
+    }
 }
