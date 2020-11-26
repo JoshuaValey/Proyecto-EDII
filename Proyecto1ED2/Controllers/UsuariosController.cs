@@ -53,7 +53,7 @@ namespace Proyecto1ED2.Controllers
             if (response.ReasonPhrase == "OK")
             {
                 username = user.User;
-                return View("Chat");
+                return View("Principal");
             }
             else
             {
