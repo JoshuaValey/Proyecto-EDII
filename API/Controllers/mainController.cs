@@ -85,10 +85,8 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("Buscar/{palabraclave}/{username}")]
-        public List<string> buscarMensajes(string palabraclave, string username)
+        public List<Mensaje> buscarMensajes(string palabraclave, string username)
         {
-            List<string> mensajesEncontrados = new List<string>();
-
             DbConnection connection = new DbConnection();
             var db = connection.Client.GetDatabase(connection.DBName);
             var usersCollection = db.GetCollection<Mensaje>("mensajes");
@@ -97,7 +95,20 @@ namespace API.Controllers
             var filter2 = Builders<Mensaje>.Filter.Eq("UsuarioReceptor", username);
             List<Mensaje> recibidosLog = usersCollection.Find(filter2).ToList();
             List<Mensaje> encontrados = buscarCoincidencias(enviadosLog, recibidosLog, palabraclave);
-            return mensajesEncontrados;
+            return encontrados;
+        }
+
+        [HttpPost]
+        [Route("Chat/{amigo}/{username}")]
+        public List<Mensaje> Chat(string amigo, string username)
+        {
+            List<Mensaje> chat = new List<Mensaje>();
+            DbConnection connection = new DbConnection();
+            var db = connection.Client.GetDatabase(connection.DBName);
+            var usersCollection = db.GetCollection<Mensaje>("mensajes");
+            var filter = Builders<Mensaje>.Filter.Eq("", username);
+            chat = usersCollection.Find(filter).ToList();
+            return chat;
         }
 
         static List<Mensaje> buscarCoincidencias(List<Mensaje> mensajesEnviados, List<Mensaje> mensajesRecibidos, string palabraclave)
