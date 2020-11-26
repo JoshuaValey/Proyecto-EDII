@@ -8,12 +8,14 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Net.Http.Formatting;
+using System.Dynamic;
 
 namespace Proyecto1ED2.Controllers
 {
     public class UsuariosController : Controller
     {
         static string username;
+        static string receptor;
         #region Cargar views
         public ActionResult CrearUsuario()
         {
@@ -30,7 +32,7 @@ namespace Proyecto1ED2.Controllers
             return View();
         }
 
-        public ActionResult Chat()
+        public ActionResult Chat(string receptor)
         {
             return View();
         }
