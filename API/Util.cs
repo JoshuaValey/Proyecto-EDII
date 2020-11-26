@@ -11,7 +11,7 @@ namespace API
         static string EncriptarMensaje(string mensaje, string tenBitsInput)
         {
             string retorno = "";
-             Sdes cipher = new Sdes(tenBitsInput);
+            Sdes cipher = new Sdes(tenBitsInput);
 
             foreach (var item in mensaje)
             {
@@ -23,12 +23,12 @@ namespace API
 
             return retorno;
 
-        } 
-        
+        }
+
         static string DesEncriptarMensaje(string mensaje, string tenBitsInput)
         {
             string retorno = "";
-             Sdes cipher = new Sdes(tenBitsInput);
+            Sdes cipher = new Sdes(tenBitsInput);
 
             foreach (var item in mensaje)
             {
@@ -41,5 +41,10 @@ namespace API
             return retorno;
 
         }
+
+        static string ByteALlaveSdes(byte llaveDiffieHelman) 
+            => Convert.ToString(llaveDiffieHelman, 2).PadLeft(10, '1');
+
+
     }
 }
