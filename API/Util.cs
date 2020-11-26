@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Biblioteca.Estructuras;
+
+namespace API
+{
+    static class Util
+    {
+        static string EncriptarMensaje(string mensaje, string tenBitsInput)
+        {
+            string retorno = "";
+             Sdes cipher = new Sdes(tenBitsInput);
+
+            foreach (var item in mensaje)
+            {
+                byte input = Convert.ToByte(item);
+                byte cifrado = cipher.SDES_Cipher(input);
+
+                retorno += Convert.ToChar(cifrado);
+            }
+
+            return retorno;
+
+        }
+    }
+}
