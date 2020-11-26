@@ -23,6 +23,23 @@ namespace API
 
             return retorno;
 
+        } 
+        
+        static string DesEncriptarMensaje(string mensaje, string tenBitsInput)
+        {
+            string retorno = "";
+             Sdes cipher = new Sdes(tenBitsInput);
+
+            foreach (var item in mensaje)
+            {
+                byte input = Convert.ToByte(item);
+                byte desCifrado = cipher.SDES_DeCipher(input);
+
+                retorno += Convert.ToChar(desCifrado);
+            }
+
+            return retorno;
+
         }
     }
 }
