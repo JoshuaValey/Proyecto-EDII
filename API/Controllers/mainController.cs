@@ -111,6 +111,18 @@ namespace API.Controllers
             return chat;
         }
 
+        [HttpPost]
+        [Route("Contactos")]
+        public List<Usuario> Contactos()
+        {
+            DbConnection connection = new DbConnection();
+            var db = connection.Client.GetDatabase(connection.DBName);
+            var usersCollection = db.GetCollection<Usuario>("users");
+            var contactoss = connection.GetAllDocumets<Usuario>("users");
+
+            return contactoss;
+        }
+
         static List<Mensaje> buscarCoincidencias(List<Mensaje> mensajesEnviados, List<Mensaje> mensajesRecibidos, string palabraclave)
         {
             List<Mensaje> coincidencias = new List<Mensaje>();

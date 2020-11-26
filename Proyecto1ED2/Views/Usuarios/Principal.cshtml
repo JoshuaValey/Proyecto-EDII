@@ -30,17 +30,12 @@
                     </div>
                     <div class="col-md-10">
 
-                        <button type="button" class="btn btn-block btn-info btn-lg">
-                            Contactos
-                        </button>
+                        @Html.ActionLink("Contactos", "MenuContactos", null, new { @class = "btn btn-block btn-info" })
                         <br />
-                        <button type="button" class="btn btn-block btn-info btn-lg">
-                            Buscar
-                        </button>
+                        @Html.ActionLink("Buscar mensaje", "BuscarMensaje", null, new { @class = "btn btn-block btn-info" })
                         <br />
-                        <button type="button" class="btn btn-block btn-lg btn-info">
-                            Historial
-                        </button>
+                        @Html.ActionLink("Historial", "Historial", null, new { @class = "btn btn-block btn-info" })
+                        <br />
                     </div>
                     <div class="col-md-1">
                     </div>

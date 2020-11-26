@@ -180,6 +180,9 @@
     <Content Include="Views\Usuarios\CrearUsuario.cshtml" />
     <Content Include="Views\Usuarios\Principal.cshtml" />
     <Content Include="Views\Usuarios\Chat.cshtml" />
+    <Content Include="Views\Usuarios\BuscarMensaje.cshtml" />
+    <Content Include="Views\Usuarios\MenuContactos.cshtml" />
+    <Content Include="Views\Usuarios\Historial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
