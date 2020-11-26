@@ -124,6 +124,29 @@ namespace API.Controllers
             return json;
         }
 
+        [HttpGet]
+        [Route("GuidSala/{persona1}/{persona2}")]
+        public string Guid(string persona1, string persona2)
+        {
+            string guid = "";
+            DbConnection connection = new DbConnection();
+            var db = connection.Client.GetDatabase(connection.DBName);
+
+            var salasPersona1 =  db.GetCollection<Sala>("salas");
+            var filter = Builders<Sala>.Filter.Eq("usuarioA", persona1);
+            var salas = salasPersona1.Find(filter).ToList();
+
+            foreach(var item in salas)
+            {
+                if (item.UsuarioB == persona2)
+                {
+                    guid = item.GUID;
+                    break;
+                }
+            }
+            return guid;
+        }
+
         static List<Mensaje> buscarCoincidencias(List<Mensaje> mensajesEnviados, List<Mensaje> mensajesRecibidos, string palabraclave)
         {
             List<Mensaje> coincidencias = new List<Mensaje>();

@@ -134,7 +134,6 @@
     <Compile Include="GlobalVariables.cs" />
     <Compile Include="Models\Mensaje.cs" />
     <Compile Include="Models\Sala.cs" />
-    <Compile Include="Models\Storage.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

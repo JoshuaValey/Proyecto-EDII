@@ -33,8 +33,25 @@ namespace Proyecto1ED2.Controllers
             return View();
         }
 
-        public ActionResult Chat(string receptor)
+        public async Task<ActionResult> Chat(string id)
         {
+            receptor = id;
+            string guidSala;
+            var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/GuidSala/" + username + "/" + receptor);
+            if (response == "") //aun no hay sala con esa persona
+            {
+                Sala sala1 = new Sala();
+                sala1.UsuarioA = username;
+                sala1.UsuarioB = receptor;
+
+                Sala sala2 = sala1;
+                sala2.UsuarioA = receptor;
+                sala2.UsuarioB = username;
+            }
+            else // ya hay una sala, recuperar mensajes y mandarlos a vista chat 
+            {
+
+            }
             return View();
         }
 
@@ -50,14 +67,19 @@ namespace Proyecto1ED2.Controllers
 
         public async Task<ActionResult> MenuContactos()
         {
-            var user = new Usuario();
-            user.User = username;
-
-            var json = JsonConvert.SerializeObject(user);
-            var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
-            //"https://localhost:44343/api/main/Contactos"
+            List<Usuario> contactos = new List<Usuario>();
             var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Contactos");
-            return View();
+            var listJsons = JsonConvert.DeserializeObject<List<Usuario>>(response);
+            
+            foreach(var item in listJsons)
+            {
+                Usuario contacto = new Usuario();
+                contacto.Nombre = item.Nombre + " " + item.Apellido;
+                contacto.User = item.User;
+                contactos.Add(contacto);
+            }
+
+            return View(contactos);
         }
 
         #endregion
