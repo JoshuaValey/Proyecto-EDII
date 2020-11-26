@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.Mvc;
 using System.Net.Http.Formatting;
 using System.Dynamic;
+using System.Threading.Tasks;
 
 namespace Proyecto1ED2.Controllers
 {
@@ -47,14 +48,15 @@ namespace Proyecto1ED2.Controllers
             return View();
         }
 
-        public ActionResult MenuContactos()
+        public async Task<ActionResult> MenuContactos()
         {
             var user = new Usuario();
             user.User = username;
 
             var json = JsonConvert.SerializeObject(user);
             var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
-            var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Contactos", jsonContent);
+            //"https://localhost:44343/api/main/Contactos"
+            var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Contactos");
             return View();
         }
 
