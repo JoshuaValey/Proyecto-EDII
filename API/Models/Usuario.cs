@@ -22,8 +22,7 @@ namespace API.Models
         public string User { get; set; }
         [BsonElement("email")]
         public string EMail { get; set; }
-        [BsonElement("llaveSdes")]
-        public string LlaveSDES { get; set; }
+       
         [BsonElement("numeroPrivado")]
         public int NumeroPrivado { get; set; }
 
@@ -36,16 +35,14 @@ namespace API.Models
         public Usuario()
         {
             this._Guid = System.Guid.NewGuid().ToString();
-            GenerarLlaveyPrivado();
+            GenerarPrivado();
         }
 
-        public void GenerarLlaveyPrivado()
+        public void GenerarPrivado()
         {
             Random rnd = new Random();
             byte value = (byte)rnd.Next(0, 255);
-            string cadenaBinaria = Convert.ToString(value, 2).PadLeft(8, '0');
-            //Llave SDES de usuario
-            this.LlaveSDES = cadenaBinaria.Substring(3, 5);
+
             //Número privado para DH
             this.NumeroPrivado = value;
 
