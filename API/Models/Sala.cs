@@ -21,9 +21,9 @@ namespace API.Models
         [BsonElement("usuarioB")]
         public string UsuarioB { get; set; }
         [BsonElement("valorPublicoA")]
-        public string ValorPublicoA { get; set; }
+        public int ValorPublicoA { get; set; }
         [BsonElement("valorPublicoB")]
-        public string ValorPublicoB { get; set; }
+        public int ValorPublicoB { get; set; }
         [BsonElement("mensajes")]
         public List<string> Mensajes { get; set; }
 

@@ -10,6 +10,9 @@ using System.Web.Mvc;
 using System.Net.Http.Formatting;
 using System.Dynamic;
 using System.Threading.Tasks;
+using MongoDB.Driver;
+using Biblioteca.Estructuras;
+using Proyecto1ED2.Connection;
 
 namespace Proyecto1ED2.Controllers
 {
@@ -40,13 +43,30 @@ namespace Proyecto1ED2.Controllers
             var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/GuidSala/" + username + "/" + receptor);
             if (response == "") //aun no hay sala con esa persona
             {
-                Sala sala1 = new Sala();
-                sala1.UsuarioA = username;
-                sala1.UsuarioB = receptor;
+                DbConnection connection = new DbConnection();
 
-                Sala sala2 = sala1;
-                sala2.UsuarioA = receptor;
-                sala2.UsuarioB = username;
+                Sala newSala = new Sala();
+                Sala newSala2 = new Sala();
+                newSala.UsuarioA = username;
+                newSala.UsuarioB = receptor;
+                newSala2.UsuarioA = receptor;
+                newSala2.UsuarioB = username;
+                newSala2.GUID = newSala.GUID;
+                //Buscar los usuarios y obtener sus valores publicos... 
+                var filtro = Builders<Usuario>.Filter.Eq("user", username);
+                var usuarioA = connection.BuscarUno<Usuario>("users", filtro);
+                var filtroB = Builders<Usuario>.Filter.Eq("user", receptor);
+                var usuarioB = connection.BuscarUno<Usuario>("users", filtroB);
+
+                DiffieHellman PersonaA = new DiffieHellman(usuarioA.NumeroPrivado);
+                DiffieHellman PersonaB = new DiffieHellman(usuarioB.NumeroPrivado);
+
+                newSala.ValorPublicoA = PersonaA.PublicoInterno;
+                newSala.ValorPublicoB = PersonaB.PublicoInterno;
+                newSala2.ValorPublicoA = PersonaB.PublicoInterno;
+                newSala2.ValorPublicoB = PersonaA.PublicoInterno;
+                connection.InsertDb<Sala>("salas", newSala);
+                connection.InsertDb<Sala>("salas", newSala2);
             }
             else // ya hay una sala, recuperar mensajes y mandarlos a vista chat 
             {
