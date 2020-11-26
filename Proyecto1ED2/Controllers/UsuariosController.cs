@@ -82,6 +82,11 @@ namespace Proyecto1ED2.Controllers
             return View(contactos);
         }
 
+        public ActionResult PalabraClave()
+        {
+            return View();
+        }
+
         #endregion
 
         HttpClient ClienteHttp = new HttpClient();
@@ -138,7 +143,12 @@ namespace Proyecto1ED2.Controllers
             }
         }
 
-
+        [HttpPost]
+        public ActionResult PalabraClave(FormCollection collection)
+        {
+            string palabra = collection["palabra"];
+            return View("BuscarMensaje");
+        }
         #endregion
     }
 }

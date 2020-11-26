@@ -133,6 +133,7 @@
     </Compile>
     <Compile Include="GlobalVariables.cs" />
     <Compile Include="Models\Mensaje.cs" />
+    <Compile Include="Models\Palabra.cs" />
     <Compile Include="Models\Sala.cs" />
     <Compile Include="Models\Usuario.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -182,6 +183,7 @@
     <Content Include="Views\Usuarios\BuscarMensaje.cshtml" />
     <Content Include="Views\Usuarios\MenuContactos.cshtml" />
     <Content Include="Views\Usuarios\Historial.cshtml" />
+    <Content Include="Views\Usuarios\PalabraClave.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
