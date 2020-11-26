@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Connection;
-using API.Modelos;
 using API.Models;
 using Biblioteca.Estructuras;
 using Microsoft.AspNetCore.Mvc;
@@ -85,12 +84,53 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Route("Buscar/{palabraclave}")]
-        public List<string> buscarMensajes(string palabraclave)
+        [Route("Buscar/{palabraclave}/{username}")]
+        public List<string> buscarMensajes(string palabraclave, string username)
         {
             List<string> mensajesEncontrados = new List<string>();
 
+            DbConnection connection = new DbConnection();
+            var db = connection.Client.GetDatabase(connection.DBName);
+            var usersCollection = db.GetCollection<Mensaje>("mensajes");
+            var filter = Builders<Mensaje>.Filter.Eq("UsuarioEmisor", username);
+            List<Mensaje> enviadosLog = usersCollection.Find(filter).ToList();
+            var filter2 = Builders<Mensaje>.Filter.Eq("UsuarioReceptor", username);
+            List<Mensaje> recibidosLog = usersCollection.Find(filter2).ToList();
+            List<Mensaje> encontrados = buscarCoincidencias(enviadosLog, recibidosLog, palabraclave);
             return mensajesEncontrados;
+        }
+
+        static List<Mensaje> buscarCoincidencias(List<Mensaje> mensajesEnviados, List<Mensaje> mensajesRecibidos, string palabraclave)
+        {
+            List<Mensaje> coincidencias = new List<Mensaje>();
+
+            foreach(var item in mensajesEnviados)
+            {
+                string[] split = item.Contenido.Split(' ');
+                for(int i = 0; i < split.Length; i++)
+                {
+                    if (split[i].ToLower() == palabraclave.ToLower()) //si contiene la palabra
+                    {
+                        coincidencias.Add(item);
+                        break;
+                    }
+                }
+            }
+
+            foreach (var item in mensajesRecibidos)
+            {
+                string[] split = item.Contenido.Split(' ');
+                for (int i = 0; i < split.Length; i++)
+                {
+                    if (split[i].ToLower() == palabraclave.ToLower()) //si contiene la palabra
+                    {
+                        coincidencias.Add(item);
+                        break;
+                    }
+                }
+            }
+
+            return coincidencias;
         }
 
         static Usuario UserLog(List<Usuario> usuariosLog, string user, string pass)

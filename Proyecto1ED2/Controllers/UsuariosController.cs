@@ -13,6 +13,7 @@ namespace Proyecto1ED2.Controllers
 {
     public class UsuariosController : Controller
     {
+        static string username;
         #region Cargar views
         public ActionResult CrearUsuario()
         {
@@ -51,7 +52,8 @@ namespace Proyecto1ED2.Controllers
             var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Login" + "/" + user.User + "/" + user.Password, jsonContent).Result;
             if (response.ReasonPhrase == "OK")
             {
-                return View("Index");
+                username = user.User;
+                return View("Chat");
             }
             else
             {
@@ -88,6 +90,8 @@ namespace Proyecto1ED2.Controllers
                 return View("CrearUsuario");
             }
         }
+
+
         #endregion
     }
 }

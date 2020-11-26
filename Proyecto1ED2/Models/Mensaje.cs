@@ -29,3 +29,4 @@ namespace Proyecto1ED2.Models
             this.Guid = System.Guid.NewGuid().ToString();
         }
     }
+}

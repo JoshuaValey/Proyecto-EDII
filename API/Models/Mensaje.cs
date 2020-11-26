@@ -6,7 +6,7 @@ using System.IO;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace Proyecto1ED2.Models
+namespace API.Models
 {
     public class Mensaje
     {
@@ -29,3 +29,4 @@ namespace Proyecto1ED2.Models
             this.Guid = System.Guid.NewGuid().ToString();
         }
     }
+}
