@@ -37,6 +37,27 @@ namespace Proyecto1ED2.Controllers
             return View();
         }
 
+        public ActionResult BuscarMensaje()
+        {
+            return View();
+        }
+
+        public ActionResult Historial()
+        {
+            return View();
+        }
+
+        public ActionResult MenuContactos()
+        {
+            var user = new Usuario();
+            user.User = username;
+
+            var json = JsonConvert.SerializeObject(user);
+            var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
+            var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Contactos", jsonContent);
+            return View();
+        }
+
         #endregion
 
         HttpClient ClienteHttp = new HttpClient();
