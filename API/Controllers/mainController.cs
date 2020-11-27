@@ -147,6 +147,28 @@ namespace API.Controllers
             return guid;
         }
 
+        [HttpGet]
+        [Route ("Historial/{username}")]
+        public string HistorialUser(string username)
+        {
+            DbConnection connection = new DbConnection();
+            var db = connection.Client.GetDatabase(connection.DBName);
+            var usersCollection = db.GetCollection<Mensaje>("mensajes");
+            var filter = Builders<Mensaje>.Filter.Eq("UsuarioEmisor", username);
+            List<Mensaje> enviadosLog = usersCollection.Find(filter).ToList();
+            var filter2 = Builders<Mensaje>.Filter.Eq("UsuarioReceptor", username);
+            List<Mensaje> recibidosLog = usersCollection.Find(filter2).ToList();
+
+            foreach(var item in recibidosLog)
+            {
+                enviadosLog.Add(item);
+            }
+
+            var json = JsonConvert.SerializeObject(enviadosLog);
+
+            return json;
+        }
+
         static List<Mensaje> buscarCoincidencias(List<Mensaje> mensajesEnviados, List<Mensaje> mensajesRecibidos, string palabraclave)
         {
             List<Mensaje> coincidencias = new List<Mensaje>();

@@ -135,9 +135,17 @@ namespace Proyecto1ED2.Controllers
             return View();
         }
 
-        public ActionResult Historial()
+        public async Task<ActionResult> Historial()
         {
-            return View();
+            var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Historial/" + username);
+            var listJsons = JsonConvert.DeserializeObject<List<Mensaje>>(response);
+            var historial = new List<string>();
+
+            foreach(var item in listJsons)
+            {
+                historial.Add(item.UsuarioEmisor + "a" + item.UsuarioReceptor + ": " + item.Contenido);
+            }
+            return View(historial);
         }
 
         public async Task<ActionResult> MenuContactos()
