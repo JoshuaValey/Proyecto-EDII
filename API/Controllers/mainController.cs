@@ -177,6 +177,105 @@ namespace API.Controllers
             return json;
         }
 
+        [HttpPost]
+        [Route ("NuevaSala/{username}/{receptor}")]
+        public IActionResult CrearSala(string username, string receptor)
+        {
+            try
+            {
+                DbConnection connection = new DbConnection();
+                Sala newSala = new Sala();
+                Sala newSala2 = new Sala();
+                newSala.UsuarioA = username;
+                newSala.UsuarioB = receptor;
+                newSala2.UsuarioA = receptor;
+                newSala2.UsuarioB = username;
+                newSala2.GUID = newSala.GUID;
+                //Buscar los usuarios y obtener sus valores publicos... 
+                var filtro = Builders<Usuario>.Filter.Eq("user", username);
+                var usuarioA = connection.BuscarUno<Usuario>("users", filtro);
+                var filtroB = Builders<Usuario>.Filter.Eq("user", receptor);
+                var usuarioB = connection.BuscarUno<Usuario>("users", filtroB);
+
+                DiffieHellman PersonaA = new DiffieHellman(usuarioA.NumeroPrivado);
+                DiffieHellman PersonaB = new DiffieHellman(usuarioB.NumeroPrivado);
+
+                newSala.ValorPublicoA = PersonaA.PublicoInterno;
+                newSala.ValorPublicoB = PersonaB.PublicoInterno;
+                newSala2.ValorPublicoA = PersonaB.PublicoInterno;
+                newSala2.ValorPublicoB = PersonaA.PublicoInterno;
+                connection.InsertDb<Sala>("salas", newSala);
+                connection.InsertDb<Sala>("salas", newSala2);
+                return StatusCode(200);
+            }
+            catch
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet]
+        [Route ("Recuperar/{guidResponse}/{username}")]
+        public string RecuperarMensajesSala(string guidResponse, string username)
+        {
+            try
+            {
+                DbConnection connection = new DbConnection();
+                List<Sala> salasDeUsuarios = connection.BuscarVarios<Sala>("salas", Builders<Sala>.Filter.Eq("guid", guidResponse));
+                var filtro = Builders<Usuario>.Filter.Eq("user", username);
+                var usuarioActual = connection.BuscarUno<Usuario>("users", filtro);
+                Sala salaActual = new Sala();
+                foreach (var item in salasDeUsuarios)
+                {
+                    if (item.UsuarioA == usuarioActual.User)
+                    {
+                        salaActual = item;
+                        break;
+                    }
+                }
+
+                //Generar key DH para generar 10bitsSDES
+                DiffieHellman PersonaA = new DiffieHellman(usuarioActual.NumeroPrivado)
+                {
+                    PublicoExterno = salaActual.ValorPublicoB
+                };
+
+                string cadenaLlaveSdes = Convert.ToString(PersonaA.GenerarKey(), 2).PadLeft(10, '0');
+                Sdes cipher = new Sdes(cadenaLlaveSdes);
+
+                List<Mensaje> mensajesEncriptados = connection.BuscarVarios<Mensaje>("mensajes",
+                    Builders<Mensaje>.Filter.Eq("salaGuid", guidResponse));
+
+                List<Mensaje> mensajesDesEncriptados = new List<Mensaje>();
+                //Des encriptar los mensajes
+                foreach (var item in mensajesEncriptados)
+                {
+                    string desEnc = "";
+                    foreach (var caracter in item.Contenido)
+                    {
+                        byte letra = Convert.ToByte(caracter);
+                        desEnc += Convert.ToChar(cipher.SDES_DeCipher(letra));
+
+                    }
+                    Mensaje mensajeDes = new Mensaje(guidResponse)
+                    {
+                        Contenido = desEnc,
+                        Guid = item.Guid,
+                        UsuarioEmisor = item.UsuarioEmisor,
+                        UsuarioReceptor = item.UsuarioReceptor
+                    };
+                    mensajesDesEncriptados.Add(mensajeDes);
+                }
+
+                var json = JsonConvert.SerializeObject(mensajesDesEncriptados);
+                return json;
+            }
+            catch
+            {
+                return "";
+            }
+        }
+
         static List<Mensaje> buscarCoincidencias(List<Mensaje> mensajesEnviados, List<Mensaje> mensajesRecibidos, string palabraclave)
         {
             List<Mensaje> coincidencias = new List<Mensaje>();

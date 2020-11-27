@@ -43,84 +43,24 @@ namespace Proyecto1ED2.Controllers
             if (receptor != username)
             {
                 string guidSala;
+                string parajson = "clave";
+
+                var json = JsonConvert.SerializeObject(parajson);
+                var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
                 var guidResponse = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/GuidSala/" + username + "/" + receptor);
-                DbConnection connection = new DbConnection();
+                
                 if (guidResponse == "") //aun no hay sala con esa persona
                 {
-
-                    Sala newSala = new Sala();
-                    Sala newSala2 = new Sala();
-                    newSala.UsuarioA = username;
-                    newSala.UsuarioB = receptor;
-                    newSala2.UsuarioA = receptor;
-                    newSala2.UsuarioB = username;
-                    newSala2.GUID = newSala.GUID;
-                    //Buscar los usuarios y obtener sus valores publicos... 
-                    var filtro = Builders<Usuario>.Filter.Eq("user", username);
-                    var usuarioA = connection.BuscarUno<Usuario>("users", filtro);
-                    var filtroB = Builders<Usuario>.Filter.Eq("user", receptor);
-                    var usuarioB = connection.BuscarUno<Usuario>("users", filtroB);
-
-                    DiffieHellman PersonaA = new DiffieHellman(usuarioA.NumeroPrivado);
-                    DiffieHellman PersonaB = new DiffieHellman(usuarioB.NumeroPrivado);
-
-                    newSala.ValorPublicoA = PersonaA.PublicoInterno;
-                    newSala.ValorPublicoB = PersonaB.PublicoInterno;
-                    newSala2.ValorPublicoA = PersonaB.PublicoInterno;
-                    newSala2.ValorPublicoB = PersonaA.PublicoInterno;
-                    connection.InsertDb<Sala>("salas", newSala);
-                    connection.InsertDb<Sala>("salas", newSala2);
+                    var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/NuevaSala/" + username + "/" + receptor, jsonContent).Result;
                     List<string> mensajes = new List<string>();
+                    Response.Write("<script>alert('Aun no tiene mensajes con este usuario')</script>");
+                    ViewBag.Amigo = receptor;
                     return View(mensajes);
                 }
                 else // ya hay una sala, recuperar mensajes y mandarlos a vista chat 
                 {
-                    List<Sala> salasDeUsuarios = connection.BuscarVarios<Sala>("salas", Builders<Sala>.Filter.Eq("guid", guidResponse));
-                    var filtro = Builders<Usuario>.Filter.Eq("user", username);
-                    var usuarioActual = connection.BuscarUno<Usuario>("users", filtro);
-                    Sala salaActual = new Sala();
-                    foreach (var item in salasDeUsuarios)
-                    {
-                        if (item.UsuarioA == usuarioActual.User)
-                        {
-                            salaActual = item;
-                            break;
-                        }
-                    }
-
-                    //Generar key DH para generar 10bitsSDES
-                    DiffieHellman PersonaA = new DiffieHellman(usuarioActual.NumeroPrivado)
-                    {
-                        PublicoExterno = salaActual.ValorPublicoB
-                    };
-
-                    string cadenaLlaveSdes = Convert.ToString(PersonaA.GenerarKey(), 2).PadLeft(10, '0');
-                    Sdes cipher = new Sdes(cadenaLlaveSdes);
-
-                    List<Mensaje> mensajesEncriptados = connection.BuscarVarios<Mensaje>("mensajes",
-                        Builders<Mensaje>.Filter.Eq("salaGuid", guidResponse));
-
-                    List<Mensaje> mensajesDesEncriptados = new List<Mensaje>();
-                    //Des encriptar los mensajes
-                    foreach (var item in mensajesEncriptados)
-                    {
-                        string desEnc = "";
-                        foreach (var caracter in item.Contenido)
-                        {
-                            byte letra = Convert.ToByte(caracter);
-                            desEnc += Convert.ToChar(cipher.SDES_DeCipher(letra));
-
-                        }
-                        Mensaje mensajeDes = new Mensaje
-                        {
-                            Contenido = desEnc,
-                            Guid = item.Guid,
-                            UsuarioEmisor = item.UsuarioEmisor,
-                            UsuarioReceptor = item.UsuarioReceptor
-                        };
-                        mensajesDesEncriptados.Add(mensajeDes);
-                    }
-
+                    var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Recuperar/" + guidResponse + "/" + username);
+                    var mensajesDesEncriptados = JsonConvert.DeserializeObject<List<Mensaje>>(response);
                     List<string> mensajes = new List<string>();
                     foreach (var item in mensajesDesEncriptados)
                     {
@@ -219,6 +159,7 @@ namespace Proyecto1ED2.Controllers
             }
             else
             {
+                Response.Write("<script>alert('Usuario o contraseña incorrectos, inténtelo de nuevo.')</script>");
                 return View("Index");
             }
         }
