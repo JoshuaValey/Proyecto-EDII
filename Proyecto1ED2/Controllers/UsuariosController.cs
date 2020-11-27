@@ -124,6 +124,7 @@ namespace Proyecto1ED2.Controllers
                     mensajes.Add(item.UsuarioEmisor + ": " + item.Contenido);
                 }
 
+                ViewBag.Amigo = receptor;
                 return View(mensajes);
             }
 
