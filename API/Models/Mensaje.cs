@@ -12,7 +12,7 @@ namespace API.Models
     {
         [BsonId]
         [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
-        public int ID { get; set; }
+        public string ID { get; set; }
         [BsonElement("guid")]
         public string Guid { get; set; }
         [BsonElement("usuarioEmisor")]
