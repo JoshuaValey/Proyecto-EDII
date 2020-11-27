@@ -98,12 +98,12 @@ namespace API.Controllers
             List<Mensaje> encontrados = buscarCoincidencias(enviadosLog, recibidosLog, palabraclave);
             var json = JsonConvert.SerializeObject(encontrados);
 
-            if (json.Length > 2) 
+           /* if (json.Length > 2) 
             {
                 retorno = json;
-            }
+            }*/
 
-            return retorno;
+            return json;
         }
 
         [HttpPost]

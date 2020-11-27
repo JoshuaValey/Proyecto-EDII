@@ -94,7 +94,7 @@ namespace Proyecto1ED2.Controllers
                 string cadenaLlaveSdes = Convert.ToString(PersonaA.GenerarKey(), 2).PadLeft(10, '0');
                 Sdes cipher = new Sdes(cadenaLlaveSdes);
 
-                List<Mensaje> mensajesEncriptados = connection.BuscarVarios<Mensaje>("mensajes", 
+                List<Mensaje> mensajesEncriptados = connection.BuscarVarios<Mensaje>("mensajes",
                     Builders<Mensaje>.Filter.Eq("salaGuid", guidResponse));
 
                 List<Mensaje> mensajesDesEncriptados = new List<Mensaje>();
@@ -119,7 +119,7 @@ namespace Proyecto1ED2.Controllers
                 }
 
                 List<string> mensajes = new List<string>();
-                foreach(var item in mensajesDesEncriptados)
+                foreach (var item in mensajesDesEncriptados)
                 {
                     mensajes.Add(item.UsuarioEmisor + ": " + item.Contenido);
                 }
@@ -132,16 +132,26 @@ namespace Proyecto1ED2.Controllers
 
         public async Task<ActionResult> BuscarMensaje(string palabra)
         {
-            List<string> mensajesEncontrados = new List<string>();
-            var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Buscar/" + palabra + "/" + username);
-            var encontrado = JsonConvert.DeserializeObject<List<Mensaje>>(response);
-
-            foreach(var item in encontrado)
+            try
             {
-                mensajesEncontrados.Add(item.UsuarioEmisor + " a " + item.UsuarioReceptor + ": " + item.Contenido);
-            }
 
-            return View(mensajesEncontrados);
+                List<string> mensajesEncontrados = new List<string>();
+                var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Buscar/" + palabra + "/" + username);
+                var encontrado = JsonConvert.DeserializeObject<List<Mensaje>>(response);
+
+                foreach (var item in encontrado)
+                {
+                    mensajesEncontrados.Add(item.UsuarioEmisor + " a " + item.UsuarioReceptor + ": " + item.Contenido);
+                }
+
+                return View(mensajesEncontrados);
+            }
+            catch(Exception e)
+            {
+                string error = e.Message;
+                Console.WriteLine(error);
+                return View("index");
+            }
         }
 
         public async Task<ActionResult> Historial()
@@ -150,7 +160,7 @@ namespace Proyecto1ED2.Controllers
             var listJsons = JsonConvert.DeserializeObject<List<Mensaje>>(response);
             var historial = new List<string>();
 
-            foreach(var item in listJsons)
+            foreach (var item in listJsons)
             {
                 historial.Add(item.UsuarioEmisor + " a " + item.UsuarioReceptor + ": " + item.Contenido);
             }
@@ -236,10 +246,10 @@ namespace Proyecto1ED2.Controllers
         }
 
         [HttpPost]
-        public void PalabraClave(FormCollection collection)
+        public async Task PalabraClave(FormCollection collection)
         {
             string palabra = collection["palabra"];
-            BuscarMensaje(palabra);
+            await BuscarMensaje(palabra);
         }
         #endregion
     }
