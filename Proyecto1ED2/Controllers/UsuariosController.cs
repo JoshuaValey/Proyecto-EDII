@@ -40,10 +40,10 @@ namespace Proyecto1ED2.Controllers
         {
             receptor = id;
             string guidSala;
-            var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/GuidSala/" + username + "/" + receptor);
-            if (response == "") //aun no hay sala con esa persona
+            var guidResponse = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/GuidSala/" + username + "/" + receptor);
+            DbConnection connection = new DbConnection();
+            if (guidResponse == "") //aun no hay sala con esa persona
             {
-                DbConnection connection = new DbConnection();
 
                 Sala newSala = new Sala();
                 Sala newSala2 = new Sala();
@@ -67,12 +67,60 @@ namespace Proyecto1ED2.Controllers
                 newSala2.ValorPublicoB = PersonaA.PublicoInterno;
                 connection.InsertDb<Sala>("salas", newSala);
                 connection.InsertDb<Sala>("salas", newSala2);
+                List<Mensaje> mensajes = new List<Mensaje>();
+                return View(mensajes);
             }
             else // ya hay una sala, recuperar mensajes y mandarlos a vista chat 
             {
+                List<Sala> salasDeUsuarios = connection.BuscarVarios<Sala>("salas", Builders<Sala>.Filter.Eq("guid", guidResponse));
+                var filtro = Builders<Usuario>.Filter.Eq("user", username);
+                var usuarioActual = connection.BuscarUno<Usuario>("users", filtro);
+                Sala salaActual = new Sala();
+                foreach (var item in salasDeUsuarios)
+                {
+                    if (item.UsuarioA == usuarioActual.User)
+                    {
+                        salaActual = item;
+                        break;
+                    }
+                }
 
+                //Generar key DH para generar 10bitsSDES
+                DiffieHellman PersonaA = new DiffieHellman(usuarioActual.NumeroPrivado)
+                {
+                    PublicoExterno = salaActual.ValorPublicoB
+                };
+
+                string cadenaLlaveSdes = Convert.ToString(PersonaA.GenerarKey(), 2).PadLeft(10, '0');
+                Sdes cipher = new Sdes(cadenaLlaveSdes);
+
+                List<Mensaje> mensajesEncriptados = connection.BuscarVarios<Mensaje>("mensajes", 
+                    Builders<Mensaje>.Filter.Eq("salaGuid", guidResponse));
+
+                List<Mensaje> mensajesDesEncriptados = new List<Mensaje>();
+                //Des encriptar los mensajes
+                foreach (var item in mensajesEncriptados)
+                {
+                    string desEnc = "";
+                    foreach (var caracter in item.Contenido)
+                    {
+                        byte letra = Convert.ToByte(caracter);
+                        desEnc += Convert.ToChar(cipher.SDES_DeCipher(letra));
+
+                    }
+                    Mensaje mensajeDes = new Mensaje
+                    {
+                        Contenido = desEnc,
+                        Guid = item.Guid,
+                        UsuarioEmisor = item.UsuarioEmisor,
+                        UsuarioReceptor = item.UsuarioReceptor
+                    };
+                    mensajesDesEncriptados.Add(mensajeDes);
+                }
+
+                return View(mensajesDesEncriptados);
             }
-            return View();
+
         }
 
         public ActionResult BuscarMensaje()
@@ -90,8 +138,8 @@ namespace Proyecto1ED2.Controllers
             List<Usuario> contactos = new List<Usuario>();
             var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Contactos");
             var listJsons = JsonConvert.DeserializeObject<List<Usuario>>(response);
-            
-            foreach(var item in listJsons)
+
+            foreach (var item in listJsons)
             {
                 Usuario contacto = new Usuario();
                 contacto.Nombre = item.Nombre + " " + item.Apellido;

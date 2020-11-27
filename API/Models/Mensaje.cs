@@ -23,10 +23,12 @@ namespace API.Models
         public string Contenido { get; set; }
         [BsonElement("contenidoArchivos")]
         public List<string> ContenidoArchivos { get; set; }
-
-        public Mensaje()
+        [BsonElement("salaGuid")]
+        public string SalaGuid { get; set; }
+        public Mensaje(string salaGuid)
         {
             this.Guid = System.Guid.NewGuid().ToString();
+            this.SalaGuid = salaGuid;
         }
     }
 }
