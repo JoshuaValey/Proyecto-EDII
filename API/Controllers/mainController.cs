@@ -74,7 +74,7 @@ namespace API.Controllers
                 }
 
 
-                
+
             }
             catch
             {
@@ -98,10 +98,10 @@ namespace API.Controllers
             List<Mensaje> encontrados = buscarCoincidencias(enviadosLog, recibidosLog, palabraclave);
             var json = JsonConvert.SerializeObject(encontrados);
 
-           /* if (json.Length > 2) 
-            {
-                retorno = json;
-            }*/
+            /* if (json.Length > 2) 
+             {
+                 retorno = json;
+             }*/
 
             return json;
         }
@@ -125,11 +125,66 @@ namespace API.Controllers
         {
             DbConnection connection = new DbConnection();
             var db = connection.Client.GetDatabase(connection.DBName);
-            
+
             var contactoss = connection.GetAllDocumets<Usuario>("users");
             var json = JsonConvert.SerializeObject(contactoss);
 
             return json;
+        }
+
+        [HttpPost]
+        [Route("NuevoMensaje/{emisor}/{receptor}/{contenido}")]
+        public void NuevoMensaje(string emisor, string receptor, string contenido)
+        {
+            
+            DbConnection connection = new DbConnection();
+            //Obtener sala
+            var filter = Builders<Sala>.Filter.Eq("usuarioA", emisor);
+            var salas = connection.BuscarVarios<Sala>("salas", filter);
+            Sala sala = new Sala();
+            //Obtener la sala que coincide con emisor y receptor... 
+            foreach (var item in salas)
+            {
+                if (item.UsuarioB == receptor)
+                {
+                    sala = item;
+                }
+            }
+
+            //Obtener el GUID de la sala 
+            string guidSala = sala.GUID;
+            //Obtener usuario para encriptar con valor privado...
+            var userFilter = Builders<Usuario>.Filter.Eq("user", emisor);
+            var usuario = connection.BuscarUno<Usuario>("users", userFilter);
+            //Recuperar valores publicos y provados para Encriptar...
+            int valorPublicoReceptor = sala.ValorPublicoB;
+            int valorPrivadoEmisor = usuario.NumeroPrivado;
+
+            DiffieHellman dh = new DiffieHellman(valorPrivadoEmisor);
+            dh.PublicoExterno = valorPublicoReceptor;
+
+            string LlaveSdes = Convert.ToString(dh.GenerarKey(), 2).PadLeft(10, '0');
+            Sdes cipher = new Sdes(LlaveSdes);
+
+            //Encriptar mensaje con SDES
+            string mensajeEncrip = "";
+            foreach (var item in contenido)
+            {
+                byte letra = Convert.ToByte(item);
+                mensajeEncrip += Convert.ToChar(cipher.SDES_Cipher(letra));
+            }
+
+            Mensaje nuevoMensaje = new Mensaje(guidSala)
+            {
+                UsuarioEmisor = emisor,
+                UsuarioReceptor = receptor,
+                Contenido = mensajeEncrip
+
+            };
+
+            connection.InsertDb<Mensaje>("mensajes", nuevoMensaje);
+
+
         }
 
         [HttpGet]
@@ -140,11 +195,11 @@ namespace API.Controllers
             DbConnection connection = new DbConnection();
             var db = connection.Client.GetDatabase(connection.DBName);
 
-            var salasPersona1 =  db.GetCollection<Sala>("salas");
+            var salasPersona1 = db.GetCollection<Sala>("salas");
             var filter = Builders<Sala>.Filter.Eq("usuarioA", persona1);
             var salas = salasPersona1.Find(filter).ToList();
 
-            foreach(var item in salas)
+            foreach (var item in salas)
             {
                 if (item.UsuarioB == persona2)
                 {
@@ -156,7 +211,7 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        [Route ("Historial/{username}")]
+        [Route("Historial/{username}")]
         public string HistorialUser(string username)
         {
             DbConnection connection = new DbConnection();
@@ -167,7 +222,7 @@ namespace API.Controllers
             var filter2 = Builders<Mensaje>.Filter.Eq("UsuarioReceptor", username);
             List<Mensaje> recibidosLog = usersCollection.Find(filter2).ToList();
 
-            foreach(var item in recibidosLog)
+            foreach (var item in recibidosLog)
             {
                 enviadosLog.Add(item);
             }
@@ -181,10 +236,10 @@ namespace API.Controllers
         {
             List<Mensaje> coincidencias = new List<Mensaje>();
 
-            foreach(var item in mensajesEnviados)
+            foreach (var item in mensajesEnviados)
             {
                 string[] split = item.Contenido.Split(' ');
-                for(int i = 0; i < split.Length; i++)
+                for (int i = 0; i < split.Length; i++)
                 {
                     if (split[i].ToLower() == palabraclave.ToLower()) //si contiene la palabra
                     {

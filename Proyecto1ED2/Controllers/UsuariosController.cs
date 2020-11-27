@@ -237,7 +237,8 @@ namespace Proyecto1ED2.Controllers
 
                 var json = JsonConvert.SerializeObject(newUser);
                 var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
-                var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Nuevo" + "/" + newUser.Nombre + "/" + newUser.Apellido + "/" + newUser.Password + "/" + newUser.User + "/" + newUser.EMail, jsonContent).Result;
+                var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Nuevo" + "/" + newUser.Nombre + "/" + 
+                    newUser.Apellido + "/" + newUser.Password + "/" + newUser.User + "/" + newUser.EMail, jsonContent).Result;
                 if (response.ReasonPhrase == "OK")
                 {
                     return View("Index");
@@ -261,22 +262,31 @@ namespace Proyecto1ED2.Controllers
         }
 
         [HttpPost]
-        public void Chat(FormCollection collection)
+        public ActionResult Chat(FormCollection collection)
         {
             string mensaje = collection["mensaje"];
+            Mensaje nuevo = new Mensaje();
+            nuevo.Contenido = mensaje;
             string files = collection["file"];
 
             if (mensaje != null)
             {
-                Mensaje nuevoMensaje = new Mensaje();
+
+                var json = JsonConvert.SerializeObject(nuevo);
+                var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                var response =  GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/NuevoMensaje" + "/" + username + "/" + receptor + "/"+ mensaje, jsonContent ).Result;
+                /*Mensaje nuevoMensaje = new Mensaje();
                 nuevoMensaje.UsuarioEmisor = username;
                 nuevoMensaje.UsuarioReceptor = receptor;
-                nuevoMensaje.Contenido = mensaje;
+                nuevoMensaje.Contenido = mensaje;*/
+
+                //Llamar metodo de la API NuevoMensaje
             }
             else if (files != null)
             {
 
             }
+            return View("Chat");
         }
         #endregion
     }
