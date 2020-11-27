@@ -251,6 +251,12 @@ namespace Proyecto1ED2.Controllers
             string palabra = collection["palabra"];
             await BuscarMensaje(palabra);
         }
+
+        [HttpPost]
+        public void Chat(FormCollection collection)
+        {
+            string mensaje = collection["mensaje"];
+        }
         #endregion
     }
 }
