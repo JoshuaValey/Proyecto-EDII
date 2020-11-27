@@ -83,10 +83,11 @@ namespace API.Controllers
 
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("Buscar/{palabraclave}/{username}")]
-        public List<Mensaje> buscarMensajes(string palabraclave, string username)
+        public string buscarMensajes(string palabraclave, string username)
         {
+            string retorno = "null";
             DbConnection connection = new DbConnection();
             var db = connection.Client.GetDatabase(connection.DBName);
             var usersCollection = db.GetCollection<Mensaje>("mensajes");
@@ -95,7 +96,14 @@ namespace API.Controllers
             var filter2 = Builders<Mensaje>.Filter.Eq("UsuarioReceptor", username);
             List<Mensaje> recibidosLog = usersCollection.Find(filter2).ToList();
             List<Mensaje> encontrados = buscarCoincidencias(enviadosLog, recibidosLog, palabraclave);
-            return encontrados;
+            var json = JsonConvert.SerializeObject(encontrados);
+
+            if (json.Length > 2) 
+            {
+                retorno = json;
+            }
+
+            return retorno;
         }
 
         [HttpPost]

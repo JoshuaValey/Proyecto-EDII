@@ -130,9 +130,18 @@ namespace Proyecto1ED2.Controllers
 
         }
 
-        public ActionResult BuscarMensaje()
+        public async Task<ActionResult> BuscarMensaje(string palabra)
         {
-            return View();
+            List<string> mensajesEncontrados = new List<string>();
+            var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Buscar/" + palabra + "/" + username);
+            var encontrado = JsonConvert.DeserializeObject<List<Mensaje>>(response);
+
+            foreach(var item in encontrado)
+            {
+                mensajesEncontrados.Add(item.UsuarioEmisor + " a " + item.UsuarioReceptor + ": " + item.Contenido);
+            }
+
+            return View(mensajesEncontrados);
         }
 
         public async Task<ActionResult> Historial()
@@ -143,7 +152,7 @@ namespace Proyecto1ED2.Controllers
 
             foreach(var item in listJsons)
             {
-                historial.Add(item.UsuarioEmisor + "a" + item.UsuarioReceptor + ": " + item.Contenido);
+                historial.Add(item.UsuarioEmisor + " a " + item.UsuarioReceptor + ": " + item.Contenido);
             }
             return View(historial);
         }
@@ -227,10 +236,10 @@ namespace Proyecto1ED2.Controllers
         }
 
         [HttpPost]
-        public ActionResult PalabraClave(FormCollection collection)
+        public void PalabraClave(FormCollection collection)
         {
             string palabra = collection["palabra"];
-            return View("BuscarMensaje");
+            BuscarMensaje(palabra);
         }
         #endregion
     }
