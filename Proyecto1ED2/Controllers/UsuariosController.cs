@@ -67,7 +67,7 @@ namespace Proyecto1ED2.Controllers
                 newSala2.ValorPublicoB = PersonaA.PublicoInterno;
                 connection.InsertDb<Sala>("salas", newSala);
                 connection.InsertDb<Sala>("salas", newSala2);
-                List<Mensaje> mensajes = new List<Mensaje>();
+                List<string> mensajes = new List<string>();
                 return View(mensajes);
             }
             else // ya hay una sala, recuperar mensajes y mandarlos a vista chat 
@@ -118,7 +118,13 @@ namespace Proyecto1ED2.Controllers
                     mensajesDesEncriptados.Add(mensajeDes);
                 }
 
-                return View(mensajesDesEncriptados);
+                List<string> mensajes = new List<string>();
+                foreach(var item in mensajesDesEncriptados)
+                {
+                    mensajes.Add(item.UsuarioEmisor + ": " + item.Contenido);
+                }
+
+                return View(mensajes);
             }
 
         }
