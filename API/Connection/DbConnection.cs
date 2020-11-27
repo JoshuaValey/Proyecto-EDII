@@ -146,41 +146,5 @@ namespace API.Connection
             }
 
         }
-
-        public T BuscarUno<T>(string collectionName, FilterDefinition<T> filter)
-        {
-            try
-            {
-                var database = this.Client.GetDatabase(this.DBName);
-                var collection = database.GetCollection<T>(collectionName);
-                var data = collection.Find<T>(filter).ToList();
-                return data[0];
-            }
-            catch (MongoException ex)
-            {
-
-                Console.WriteLine(ex.Message.ToString());
-                throw;
-            }
-
-        }
-
-        public List<T> BuscarVarios<T>(string collectionName, FilterDefinition<T> filter)
-        {
-            try
-            {
-                var database = this.Client.GetDatabase(this.DBName);
-                var collection = database.GetCollection<T>(collectionName);
-                return collection.Find<T>(filter).ToList();
-
-            }
-            catch (MongoException ex)
-            {
-
-                Console.WriteLine(ex.Message.ToString());
-                throw;
-            }
-
-        }
     }
 }
