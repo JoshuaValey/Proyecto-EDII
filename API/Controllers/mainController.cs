@@ -87,15 +87,21 @@ namespace API.Controllers
         [Route("Buscar/{palabraclave}/{username}")]
         public string buscarMensajes(string palabraclave, string username)
         {
-            string retorno = "null";
+            //string retorno = "null";
             DbConnection connection = new DbConnection();
             var db = connection.Client.GetDatabase(connection.DBName);
             var usersCollection = db.GetCollection<Mensaje>("mensajes");
             var filter = Builders<Mensaje>.Filter.Eq("UsuarioEmisor", username);
             List<Mensaje> enviadosLog = usersCollection.Find(filter).ToList();
+
+            List<Mensaje> enviadosLogDes = ListaMensajesDesEncriptados(enviadosLog, connection);
+            
             var filter2 = Builders<Mensaje>.Filter.Eq("UsuarioReceptor", username);
             List<Mensaje> recibidosLog = usersCollection.Find(filter2).ToList();
-            List<Mensaje> encontrados = buscarCoincidencias(enviadosLog, recibidosLog, palabraclave);
+
+            List<Mensaje> recibidisLogDes = ListaMensajesDesEncriptados(recibidosLog, connection);
+
+            List<Mensaje> encontrados = buscarCoincidencias(enviadosLogDes, recibidisLogDes, palabraclave);
             var json = JsonConvert.SerializeObject(encontrados);
 
             /* if (json.Length > 2) 
@@ -105,6 +111,46 @@ namespace API.Controllers
 
             return json;
         }
+
+        List<Mensaje> ListaMensajesDesEncriptados(List<Mensaje> encriptList, DbConnection connection)
+        {
+            List<Mensaje> retorno = new List<Mensaje>();
+            foreach (var item in encriptList)
+            {
+                var emisor = item.UsuarioEmisor;
+                var usuarioA = connection.BuscarUno<Usuario>("users", Builders<Usuario>.Filter.Eq("user", emisor));
+                var receptor = item.UsuarioReceptor;
+                var usuarioB = connection.BuscarUno<Usuario>("users", Builders<Usuario>.Filter.Eq("user", receptor));
+
+                DiffieHellman DhUsuarioA = new DiffieHellman(usuarioA.NumeroPrivado);
+                DiffieHellman DhUsuarioB = new DiffieHellman(usuarioB.NumeroPrivado);
+                DhUsuarioB.PublicoExterno = DhUsuarioA.PublicoInterno;
+
+                string llaveSdes = Convert.ToString(DhUsuarioB.GenerarKey(), 2).PadLeft(10, '0');
+                Sdes cipher = new Sdes(llaveSdes);
+
+                string mensajeDesc = "";
+                foreach (var caracter in item.Contenido)
+                {
+                    byte letra = Convert.ToByte(caracter);
+                    mensajeDesc += Convert.ToChar(cipher.SDES_DeCipher(letra));
+                }
+                Mensaje desEncriptado = new Mensaje(item.SalaGuid)
+                {
+                    Contenido = mensajeDesc,
+                    Guid = item.Guid,
+                    UsuarioEmisor = item.UsuarioEmisor,
+                    UsuarioReceptor = item.UsuarioReceptor,
+                    ContenidoArchivos = item.ContenidoArchivos
+                };
+
+                retorno.Add(desEncriptado);
+            }
+
+            return retorno;
+        }
+
+
 
         [HttpPost]
         [Route("Chat/{amigo}/{username}")]
