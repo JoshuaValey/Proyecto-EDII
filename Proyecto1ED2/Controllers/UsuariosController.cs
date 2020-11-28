@@ -20,6 +20,7 @@ namespace Proyecto1ED2.Controllers
     {
         static string username;
         static string receptor;
+
         #region Cargar views
         public ActionResult CrearUsuario()
         {
@@ -180,8 +181,6 @@ namespace Proyecto1ED2.Controllers
 
         #endregion
 
-        HttpClient ClienteHttp = new HttpClient();
-
         #region Action Results botones 
         [HttpPost]
         public ActionResult Index(FormCollection collection)
@@ -210,23 +209,31 @@ namespace Proyecto1ED2.Controllers
         {
             try
             {
-                var newUser = new Usuario();
-                newUser.Nombre = collection["Nombre"];
-                newUser.Apellido = collection["Apellido"];
-                newUser.Password = collection["Password"];
-                newUser.User = collection["User"];
-                newUser.EMail = collection["EMail"];
-
-                var json = JsonConvert.SerializeObject(newUser);
-                var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
-                var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Nuevo" + "/" + newUser.Nombre + "/" +
-                    newUser.Apellido + "/" + newUser.Password + "/" + newUser.User + "/" + newUser.EMail, jsonContent).Result;
-                if (response.ReasonPhrase == "OK")
+                if(collection["Nombre"] != "" && collection["Apellido"]!="" && collection["Password"]!="" && collection["User"]!="" && collection["EMail"] != "")
                 {
-                    return View("Index");
+                    var newUser = new Usuario();
+                    newUser.Nombre = collection["Nombre"];
+                    newUser.Apellido = collection["Apellido"];
+                    newUser.Password = collection["Password"];
+                    newUser.User = collection["User"];
+                    newUser.EMail = collection["EMail"];
+
+                    var json = JsonConvert.SerializeObject(newUser);
+                    var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
+                    var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Nuevo" + "/" + newUser.Nombre + "/" +
+                        newUser.Apellido + "/" + newUser.Password + "/" + newUser.User + "/" + newUser.EMail, jsonContent).Result;
+                    if (response.ReasonPhrase == "OK")
+                    {
+                        return View("Index");
+                    }
+                    else
+                    {
+                        return View("CrearUsuario");
+                    }
                 }
                 else
                 {
+                    Response.Write("<script>alert('No se llenaron todos los campos solicitados.')</script>");
                     return View("CrearUsuario");
                 }
             }

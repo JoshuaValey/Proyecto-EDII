@@ -27,8 +27,7 @@
                     </h1>
                 </div>
                 <br />
-                <br />
-                <table class="table-bordered">
+                <table class="table table-bordered">
                     @foreach (var item in Model)
                     {
                         <tr>
@@ -38,6 +37,10 @@
                         </tr>
                     }
                 </table>
+                <br />
+                <div id="Regresar">
+                    @Html.ActionLink("Regresar", "Principal", null, new { @class = "btn btn-block btn-info" })
+                </div>
             </div>
             <div class="col-md-2">
             </div>
