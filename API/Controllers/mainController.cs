@@ -87,18 +87,15 @@ namespace API.Controllers
         [Route("Buscar/{palabraclave}/{username}")]
         public string buscarMensajes(string palabraclave, string username)
         {
-            //string retorno = "null";
             DbConnection connection = new DbConnection();
             var db = connection.Client.GetDatabase(connection.DBName);
             var usersCollection = db.GetCollection<Mensaje>("mensajes");
             var filter = Builders<Mensaje>.Filter.Eq("UsuarioEmisor", username);
             List<Mensaje> enviadosLog = usersCollection.Find(filter).ToList();
-
             List<Mensaje> enviadosLogDes = ListaMensajesDesEncriptados(enviadosLog, connection);
             
             var filter2 = Builders<Mensaje>.Filter.Eq("UsuarioReceptor", username);
             List<Mensaje> recibidosLog = usersCollection.Find(filter2).ToList();
-
             List<Mensaje> recibidisLogDes = ListaMensajesDesEncriptados(recibidosLog, connection);
 
             List<Mensaje> encontrados = buscarCoincidencias(enviadosLogDes, recibidisLogDes, palabraclave);
@@ -144,8 +141,6 @@ namespace API.Controllers
 
             return retorno;
         }
-
-
 
         [HttpPost]
         [Route("Chat/{amigo}/{username}")]
@@ -272,7 +267,6 @@ namespace API.Controllers
             return connection.BuscarVarios<Sala>("salas", filter);
 
         }
-
 
         [HttpGet]
         [Route("Historial/{username}")]

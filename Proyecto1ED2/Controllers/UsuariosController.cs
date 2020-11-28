@@ -20,6 +20,7 @@ namespace Proyecto1ED2.Controllers
     {
         static string username;
         static string receptor;
+        static string palabraBuscada;
 
         #region Cargar views
         public ActionResult CrearUsuario()
@@ -79,28 +80,9 @@ namespace Proyecto1ED2.Controllers
             }
         }
 
-        public async Task<ActionResult> BuscarMensaje(string palabra)
+        public ActionResult BuscarMensaje()
         {
-            try
-            {
-
-                List<string> mensajesEncontrados = new List<string>();
-                var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Buscar/" + palabra + "/" + username);
-                var encontrado = JsonConvert.DeserializeObject<List<Mensaje>>(response);
-
-                foreach (var item in encontrado)
-                {
-                    mensajesEncontrados.Add(item.UsuarioEmisor + " a " + item.UsuarioReceptor + ": " + item.Contenido);
-                }
-
-                return View(mensajesEncontrados);
-            }
-            catch (Exception e)
-            {
-                string error = e.Message;
-                Console.WriteLine(error);
-                return View("index");
-            }
+            return View();
         }
 
         public async Task<ActionResult> Historial()
@@ -244,10 +226,30 @@ namespace Proyecto1ED2.Controllers
         }
 
         [HttpPost]
-        public async Task PalabraClave(FormCollection collection)
+        public async Task<ActionResult> PalabraClave(FormCollection collection)
         {
-            string palabra = collection["palabra"];
-            await BuscarMensaje(palabra);
+            palabraBuscada = collection["palabra"];
+            try
+            {
+                string palabra = palabraBuscada;
+                List<string> mensajesEncontrados = new List<string>();
+                var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Buscar/" + palabra + "/" + username);
+                var encontrado = JsonConvert.DeserializeObject<List<Mensaje>>(response);
+
+                foreach (var item in encontrado)
+                {
+                    mensajesEncontrados.Add(item.UsuarioEmisor + " a " + item.UsuarioReceptor + ": " + item.Contenido);
+                }
+
+                return View("BuscarMensaje",mensajesEncontrados);
+            }
+            catch (Exception e)
+            {
+                string error = e.Message;
+                Console.WriteLine(error);
+                return View("index");
+            }
+            //return View("BuscarMensaje");
         }
 
         [HttpPost]
