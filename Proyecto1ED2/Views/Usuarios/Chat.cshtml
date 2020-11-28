@@ -3,7 +3,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
 @using Proyecto1ED2.Models
-@model List<string> 
+@model List<string>
 
 @{
     Layout = null;
@@ -15,21 +15,21 @@
 {
     <head>
         @*<style>
-            #tabla{
-                height: 25%;
-                width: 80%;
-               
-            }
-            #BtnEnviar{
-                margin-top:20%;
-            }
-           
-            #Regresar{
-                margin-top: 5%;
-            }
+                #tabla{
+                    height: 25%;
+                    width: 80%;
 
-           
-        </style>*@
+                }
+                #BtnEnviar{
+                    margin-top:20%;
+                }
+
+                #Regresar{
+                    margin-top: 5%;
+                }
+
+
+            </style>*@
         <br />
         <div class="row">
             <div class="col-md-2">
@@ -87,7 +87,7 @@
                                     <input type="file" id="file" name="file" />
                                 </div>
                                 <div class="form-group" style="text-align:center">
-                                    <input type="submit" value="Submit" class="btn btn-default"/>
+                                    <input type="submit" value="Submit" class="btn btn-default" />
                                 </div>
                             }
                         </div>
@@ -99,10 +99,14 @@
                         <div class="col-md-2">
                         </div>
                         <div class="col-md-8" id="Regresar">
+                            @Html.ActionLink("Recargar", "Recargar", null, new { @class = "btn btn-block btn-info" })
+                            <br />
+
                             @Html.ActionLink("Regresar", "MenuContactos", null, new { @class = "btn btn-block btn-info" })
                         </div>
                         <div class="col-md-2">
                         </div>
+                        
                     </div>
                 </div>
             </div>
