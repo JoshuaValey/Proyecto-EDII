@@ -98,11 +98,6 @@ namespace API.Controllers
             List<Mensaje> encontrados = buscarCoincidencias(enviadosLog, recibidosLog, palabraclave);
             var json = JsonConvert.SerializeObject(encontrados);
 
-            /* if (json.Length > 2) 
-             {
-                 retorno = json;
-             }*/
-
             return json;
         }
 
@@ -329,6 +324,14 @@ namespace API.Controllers
             {
                 return "";
             }
+        }
+
+        [HttpPost]
+        [Route ("GuardarArchivo")]
+        public IActionResult Guardar()
+        {
+            var files = Request.Form.Files;
+            return StatusCode(200);
         }
 
         static List<Mensaje> buscarCoincidencias(List<Mensaje> mensajesEnviados, List<Mensaje> mensajesRecibidos, string palabraclave)
