@@ -199,6 +199,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="GlobalVariables.cs" />
+    <Compile Include="Models\Archivo.cs" />
     <Compile Include="Models\Mensaje.cs" />
     <Compile Include="Models\Palabra.cs" />
     <Compile Include="Models\Sala.cs" />
@@ -353,6 +354,8 @@
     <Content Include="Scripts\popper.js.map" />
     <Content Include="Scripts\popper-utils.min.js.map" />
     <Content Include="Scripts\popper-utils.js.map" />
+    <Content Include="Views\Usuarios\Archivo.cshtml" />
+    <Content Include="Views\Usuarios\Temporal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 using MongoDB.Driver;
 using Biblioteca.Estructuras;
 using Proyecto1ED2.Connection;
+using System.IO;
+using System.Web.Script.Serialization;
+using System.Net.Mime;
 
 namespace Proyecto1ED2.Controllers
 {
@@ -191,9 +194,50 @@ namespace Proyecto1ED2.Controllers
             return View();
         }
 
+        public ActionResult Archivo()
+        {
+            DbConnection connection = new DbConnection();
+            var db = connection.Client.GetDatabase(connection.DBName);
+            var usersCollection = db.GetCollection<Archivo>("archivos");
+            var filter = Builders<Archivo>.Filter.Eq("emisor", username);
+            List<Archivo> archivosEnviados = usersCollection.Find(filter).ToList();
+
+            var filter2 = Builders<Archivo>.Filter.Eq("receptor", username);
+            List<Archivo> archivosRecibidos = usersCollection.Find(filter2).ToList();
+
+            foreach(var item in archivosRecibidos)
+            {
+                archivosEnviados.Add(item);
+            }
+
+            return View(archivosEnviados);
+        }
+
+        public async Task<FileStreamResult> Temporal(string id)
+        {
+            DbConnection connection = new DbConnection();
+            var db = connection.Client.GetDatabase(connection.DBName);
+            var usersCollection = db.GetCollection<Archivo>("archivos");
+            var filter = Builders<Archivo>.Filter.Eq("nombre", id);
+            List<Archivo> archivo = usersCollection.Find(filter).ToList();
+
+            return await DescargarArchivo(archivo[0].Ruta);
+        }
         #endregion
 
         #region Action Results botones 
+
+        public async Task<FileStreamResult> DescargarArchivo(string ruta)
+        {
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(ruta, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+            return File(memory, MediaTypeNames.Application.Octet, Path.GetFileName(ruta));
+        }
+
         [HttpPost]
         public ActionResult Index(FormCollection collection)
         {
@@ -240,6 +284,7 @@ namespace Proyecto1ED2.Controllers
                     }
                     else
                     {
+
                         return View("CrearUsuario");
                     }
                 }
@@ -296,16 +341,23 @@ namespace Proyecto1ED2.Controllers
                 var response =  GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/NuevoMensaje" + "/" + username + "/" + receptor + "/"+ mensaje, jsonContent ).Result;
 
             }
-            else if (file != null && file.ContentLength>0)
+            else if (file!=null)
             {
-                var content = new MultipartFormDataContent();
-                byte[] bytes = new byte[file.InputStream.Length + 1];
-                file.InputStream.Read(bytes, 0, bytes.Length);
-                var fileContent = new ByteArrayContent(bytes);
-                fileContent.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment") { FileName = file.FileName };
-                content.Add(fileContent);
+                string ruta = Server.MapPath("~/Archivos/");
 
-                var result = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/GuardarArchivo", content).Result;
+                string rutaUsuario = Server.MapPath("");
+                string archivo = ruta + Path.GetFileName(file.FileName);
+                var fileName = Path.GetFileName(file.FileName).Substring(0, Path.GetFileName(file.FileName).IndexOf("."));
+                file.SaveAs(archivo);
+
+                var infoArchivo = new Archivo();
+                infoArchivo.Emisor = username;
+                infoArchivo.Receptor = receptor;
+                infoArchivo.Ruta = archivo;
+                infoArchivo.Nombre = file.FileName;
+
+                DbConnection connection = new DbConnection();
+                connection.InsertDb<Archivo>("archivos", infoArchivo);
             }
 
             var guidResponse = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/GuidSala/" + username + "/" + receptor);

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Newtonsoft.Json;
 using MongoDB.Bson;
-
+using System.Net.Http;
 
 namespace API.Controllers
 {
@@ -72,9 +72,6 @@ namespace API.Controllers
                     mongo.InsertDb<Usuario>("users", newUser);
                     return StatusCode(200);
                 }
-
-
-
             }
             catch
             {
@@ -391,9 +388,10 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("GuardarArchivo")]
-        public IActionResult Guardar()
+        public async Task<IActionResult> GuardarAsync()
         {
-            var files = Request.Form.Files;
+            
+
             return StatusCode(200);
         }
 
