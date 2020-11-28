@@ -244,31 +244,30 @@ namespace Proyecto1ED2.Controllers
         }
 
         [HttpPost]
-        public ActionResult Chat(FormCollection collection)
+        public void Chat(FormCollection collection, HttpPostedFileBase file)
         {
             string mensaje = collection["mensaje"];
             Mensaje nuevo = new Mensaje();
             nuevo.Contenido = mensaje;
-            string files = collection["file"];
 
-            if (mensaje != null)
+            if (mensaje != "" && mensaje != null)
             {
-
                 var json = JsonConvert.SerializeObject(nuevo);
                 var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
-                var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/NuevoMensaje" + "/" + username + "/" + receptor + "/" + mensaje, jsonContent).Result;
-                /*Mensaje nuevoMensaje = new Mensaje();
-                nuevoMensaje.UsuarioEmisor = username;
-                nuevoMensaje.UsuarioReceptor = receptor;
-                nuevoMensaje.Contenido = mensaje;*/
-
-                //Llamar metodo de la API NuevoMensaje
+                var response =  GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/NuevoMensaje" + "/" + username + "/" + receptor + "/"+ mensaje, jsonContent ).Result;
             }
-            else if (files != null)
+            else if (file != null && file.ContentLength>0)
             {
+                var content = new MultipartFormDataContent();
+                byte[] bytes = new byte[file.InputStream.Length + 1];
+                file.InputStream.Read(bytes, 0, bytes.Length);
+                var fileContent = new ByteArrayContent(bytes);
+                fileContent.Headers.ContentDisposition = new System.Net.Http.Headers.ContentDispositionHeaderValue("attachment") { FileName = file.FileName };
+                content.Add(fileContent);
 
+                var result = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/GuardarArchivo", content).Result;
             }
-            return View("Chat");
+            RedirectToAction("Chat",receptor);
         }
         #endregion
     }

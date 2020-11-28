@@ -16,6 +16,7 @@ namespace Proyecto1ED2
             WebApiClient.BaseAddress = new Uri("https://localhost:44343/main");
             WebApiClient.DefaultRequestHeaders.Clear();
             WebApiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("aplication/json"));
+            WebApiClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("attachment"));
         }
     }
 }

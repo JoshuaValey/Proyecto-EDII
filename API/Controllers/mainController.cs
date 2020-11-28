@@ -104,11 +104,6 @@ namespace API.Controllers
             List<Mensaje> encontrados = buscarCoincidencias(enviadosLogDes, recibidisLogDes, palabraclave);
             var json = JsonConvert.SerializeObject(encontrados);
 
-            /* if (json.Length > 2) 
-             {
-                 retorno = json;
-             }*/
-
             return json;
         }
 
@@ -268,7 +263,7 @@ namespace API.Controllers
             return JsonConvert.SerializeObject(response);
         }
 
-       public List<Sala> ObtenerSalas(string persona1)
+        public List<Sala> ObtenerSalas(string persona1)
         {
             DbConnection connection = new DbConnection();
             
@@ -398,6 +393,14 @@ namespace API.Controllers
             {
                 return "";
             }
+        }
+
+        [HttpPost]
+        [Route("GuardarArchivo")]
+        public IActionResult Guardar()
+        {
+            var files = Request.Form.Files;
+            return StatusCode(200);
         }
 
         [HttpGet]
