@@ -187,12 +187,7 @@ namespace API.Controllers
         public string Guid(string persona1, string persona2)
         {
             string guid = "";
-            DbConnection connection = new DbConnection();
-            var db = connection.Client.GetDatabase(connection.DBName);
-
-            var salasPersona1 = db.GetCollection<Sala>("salas");
-            var filter = Builders<Sala>.Filter.Eq("usuarioA", persona1);
-            var salas = salasPersona1.Find(filter).ToList();
+            var salas = ObtenerSalas(persona1);
 
             foreach (var item in salas)
             {
@@ -204,6 +199,34 @@ namespace API.Controllers
             }
             return guid;
         }
+
+        [HttpGet]
+        [Route("GetSala/{persona1}/{persona2}")]
+        public string GetSala(string persona1, string persona2)
+        {
+            Sala response = new Sala();
+            var salas = ObtenerSalas(persona1);
+
+            foreach (var item in salas)
+            {
+                if (item.UsuarioB == persona2)
+                {
+                    response = item;
+                }
+            }
+            return JsonConvert.SerializeObject(response);
+        }
+
+        public List<Sala> ObtenerSalas(string persona1)
+        {
+            DbConnection connection = new DbConnection();
+            
+            var filter = Builders<Sala>.Filter.Eq("usuarioA", persona1);
+            
+            return connection.BuscarVarios<Sala>("salas", filter);
+
+        }
+
 
         [HttpGet]
         [Route("Historial/{username}")]
@@ -327,11 +350,21 @@ namespace API.Controllers
         }
 
         [HttpPost]
-        [Route ("GuardarArchivo")]
+        [Route("GuardarArchivo")]
         public IActionResult Guardar()
         {
             var files = Request.Form.Files;
             return StatusCode(200);
+        }
+
+        [HttpGet]
+        [Route("ObtenerUsuario/{usuario}")]
+        public string ObtenerUsuario(string usuario)
+        {
+            DbConnection connection = new DbConnection();
+            var filter = Builders<Usuario>.Filter.Eq("user", usuario);
+            var usuarioResponse = connection.BuscarUno<Usuario>("users", filter);
+            return JsonConvert.SerializeObject(usuarioResponse);
         }
 
         static List<Mensaje> buscarCoincidencias(List<Mensaje> mensajesEnviados, List<Mensaje> mensajesRecibidos, string palabraclave)
