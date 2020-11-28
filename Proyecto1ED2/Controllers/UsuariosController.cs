@@ -44,7 +44,6 @@ namespace Proyecto1ED2.Controllers
 
             if (receptor != username)
             {
-                string guidSala;
                 string parajson = "clave";
 
                 var json = JsonConvert.SerializeObject(parajson);
@@ -253,7 +252,7 @@ namespace Proyecto1ED2.Controllers
         }
 
         [HttpPost]
-        public void Chat(FormCollection collection, HttpPostedFileBase file)
+        public async Task<ActionResult> Chat(FormCollection collection, HttpPostedFileBase file)
         {
             string mensaje = collection["mensaje"];
             Mensaje nuevo = new Mensaje();
@@ -264,6 +263,7 @@ namespace Proyecto1ED2.Controllers
                 var json = JsonConvert.SerializeObject(nuevo);
                 var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
                 var response =  GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/NuevoMensaje" + "/" + username + "/" + receptor + "/"+ mensaje, jsonContent ).Result;
+
             }
             else if (file != null && file.ContentLength>0)
             {
@@ -276,7 +276,21 @@ namespace Proyecto1ED2.Controllers
 
                 var result = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/GuardarArchivo", content).Result;
             }
-            RedirectToAction("Chat",receptor);
+
+            var guidResponse = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/GuidSala/" + username + "/" + receptor);
+
+            var response2 = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Recuperar/" + guidResponse + "/" + username);
+            var mensajesDesEncriptados = JsonConvert.DeserializeObject<List<Mensaje>>(response2);
+            List<string> mensajes = new List<string>();
+            foreach (var item in mensajesDesEncriptados)
+            {
+                mensajes.Add(item.UsuarioEmisor + ": " + item.Contenido);
+            }
+
+            ViewBag.Amigo = receptor;
+            return View(mensajes);
+
+           // RedirectToAction("Chat",receptor);
         }
         #endregion
     }
