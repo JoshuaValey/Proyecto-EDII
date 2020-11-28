@@ -48,7 +48,7 @@ namespace Proyecto1ED2.Controllers
                 var json = JsonConvert.SerializeObject(parajson);
                 var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
                 var guidResponse = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/GuidSala/" + username + "/" + receptor);
-                
+
                 if (guidResponse == "") //aun no hay sala con esa persona
                 {
                     var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/NuevaSala/" + username + "/" + receptor, jsonContent).Result;
@@ -94,7 +94,7 @@ namespace Proyecto1ED2.Controllers
 
                 return View(mensajesEncontrados);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 string error = e.Message;
                 Console.WriteLine(error);
@@ -105,13 +105,54 @@ namespace Proyecto1ED2.Controllers
         public async Task<ActionResult> Historial()
         {
             var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Historial/" + username);
-            var listJsons = JsonConvert.DeserializeObject<List<Mensaje>>(response);
+            var listaMensajes = JsonConvert.DeserializeObject<List<Mensaje>>(response);
             var historial = new List<string>();
 
-            foreach (var item in listJsons)
+            if (listaMensajes.Count != 0)
             {
-                historial.Add(item.UsuarioEmisor + " a " + item.UsuarioReceptor + ": " + item.Contenido);
+
+                /*var salaResponse = await GlobalVariables.WebApiClient.GetStringAsync(
+                    "https://localhost:44343/api/main/GetSala/" + usuarioA + "/" + usuarioB);
+                var salaEncontrada = JsonConvert.DeserializeObject<Sala>(salaResponse);*/
+
+                foreach (var item in listaMensajes)
+                {
+
+
+                    string usuarioa = item.UsuarioEmisor;
+                    var queryA = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/ObtenerUsuario/" + usuarioa);
+                    var usuarioA = JsonConvert.DeserializeObject<Usuario>(queryA);
+                    string usuariob = item.UsuarioReceptor;
+                    var queryB = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/ObtenerUsuario/" + usuariob);
+                    var usuarioB = JsonConvert.DeserializeObject<Usuario>(queryB);
+
+                    DiffieHellman DhUsuarioA = new DiffieHellman(usuarioA.NumeroPrivado);
+                    DiffieHellman DhUsuarioB = new DiffieHellman(usuarioB.NumeroPrivado);
+                    DhUsuarioB.PublicoExterno = DhUsuarioA.PublicoInterno;
+
+                    string llaveSdes = Convert.ToString(DhUsuarioB.GenerarKey(), 2).PadLeft(10, '0');
+
+                    Sdes cipher = new Sdes(llaveSdes);
+
+
+
+                    string mensajeDes = "";
+                    foreach (var character in item.Contenido)
+                    {
+                        byte letra = Convert.ToByte(character);
+                        mensajeDes += Convert.ToChar(cipher.SDES_DeCipher(letra));
+                    }
+
+                    historial.Add(item.UsuarioEmisor + " a " + item.UsuarioReceptor + ": " + mensajeDes);
+                }
+
             }
+            else
+            {
+                Response.Write("<script>alert('El historial está vacío!!')</script>");
+            }
+
+
             return View(historial);
         }
 
@@ -178,7 +219,7 @@ namespace Proyecto1ED2.Controllers
 
                 var json = JsonConvert.SerializeObject(newUser);
                 var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
-                var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Nuevo" + "/" + newUser.Nombre + "/" + 
+                var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/Nuevo" + "/" + newUser.Nombre + "/" +
                     newUser.Apellido + "/" + newUser.Password + "/" + newUser.User + "/" + newUser.EMail, jsonContent).Result;
                 if (response.ReasonPhrase == "OK")
                 {
@@ -215,7 +256,7 @@ namespace Proyecto1ED2.Controllers
 
                 var json = JsonConvert.SerializeObject(nuevo);
                 var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
-                var response =  GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/NuevoMensaje" + "/" + username + "/" + receptor + "/"+ mensaje, jsonContent ).Result;
+                var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/NuevoMensaje" + "/" + username + "/" + receptor + "/" + mensaje, jsonContent).Result;
                 /*Mensaje nuevoMensaje = new Mensaje();
                 nuevoMensaje.UsuarioEmisor = username;
                 nuevoMensaje.UsuarioReceptor = receptor;
