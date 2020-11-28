@@ -38,6 +38,37 @@ namespace Proyecto1ED2.Controllers
             return View();
         }
 
+
+        public async Task<ActionResult> Recargar()
+        {
+            string parajson = "clave";
+
+            var json = JsonConvert.SerializeObject(parajson);
+            var jsonContent = new System.Net.Http.StringContent(json, UnicodeEncoding.UTF8, "application/json");
+            var guidResponse = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/GuidSala/" + username + "/" + receptor);
+
+            if (guidResponse == "") //aun no hay sala con esa persona
+            {
+                var response = GlobalVariables.WebApiClient.PostAsync("https://localhost:44343/api/main/NuevaSala/" + username + "/" + receptor, jsonContent).Result;
+                List<string> mensajes = new List<string>();
+                Response.Write("<script>alert('Aun no tiene mensajes con este usuario')</script>");
+                ViewBag.Amigo = receptor;
+                return View(mensajes);
+            }
+            else // ya hay una sala, recuperar mensajes y mandarlos a vista chat 
+            {
+                var response = await GlobalVariables.WebApiClient.GetStringAsync("https://localhost:44343/api/main/Recuperar/" + guidResponse + "/" + username);
+                var mensajesDesEncriptados = JsonConvert.DeserializeObject<List<Mensaje>>(response);
+                List<string> mensajes = new List<string>();
+                foreach (var item in mensajesDesEncriptados)
+                {
+                    mensajes.Add(item.UsuarioEmisor + ": " + item.Contenido);
+                }
+
+                ViewBag.Amigo = receptor;
+                return View("Chat",mensajes);
+            }
+        }
         public async Task<ActionResult> Chat(string id)
         {
             receptor = id;
