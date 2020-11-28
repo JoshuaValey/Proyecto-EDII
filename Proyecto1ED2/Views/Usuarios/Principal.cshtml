@@ -1,0 +1,50 @@
+﻿<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-10">
+                <br />
+                <br />
+                <br />
+                <br />
+                <div class="page-header">
+                    <h1>
+                        Menú principal
+                    </h1>
+                </div>
+                <br />
+                <br />
+                <div class="row">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-10">
+
+                        @Html.ActionLink("Contactos", "MenuContactos", null, new { @class = "btn btn-block btn-info" })
+                        <br />
+                        @Html.ActionLink("Buscar mensaje", "PalabraClave", null, new { @class = "btn btn-block btn-info" })
+                        <br />
+                        @Html.ActionLink("Historial", "Historial", null, new { @class = "btn btn-block btn-info" })
+                        <br />
+                    </div>
+                    <div class="col-md-1">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1">
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
